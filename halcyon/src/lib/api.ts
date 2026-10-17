@@ -77,6 +77,17 @@ function requireConfigured(): void {
   if (!apiConfigured) throw new OfflineError("Firebase is not configured yet");
 }
 
+function pingRevalidate(): void {
+  if (typeof window === "undefined") return;
+  const secret = process.env.NEXT_PUBLIC_REVALIDATE_SECRET;
+  if (!secret) return;
+  void fetch("/api/revalidate", {
+    method: "POST",
+    headers: { "x-revalidate-secret": secret },
+    cache: "no-store",
+  }).catch(() => undefined);
+}
+
 function authErrorMessage(err: unknown): string {
   const code = (err as { code?: string })?.code ?? "";
   switch (code) {
@@ -322,12 +333,14 @@ export const api = {
   async createProperty(input: Property): Promise<Property> {
     requireConfigured();
     await setDoc(doc(adminDb(), "properties", input.slug), input);
+    pingRevalidate();
     return input;
   },
 
   async updateProperty(slug: string, patch: Partial<Property>): Promise<Property> {
     requireConfigured();
     await updateDoc(doc(adminDb(), "properties", slug), patch as Record<string, unknown>);
+    pingRevalidate();
     const snap = await getDoc(doc(adminDb(), "properties", slug));
     if (!snap.exists()) throw new ApiError("Residence not found.", 404, "not_found");
     return snap.data() as Property;
@@ -336,6 +349,7 @@ export const api = {
   async deleteProperty(slug: string): Promise<void> {
     requireConfigured();
     await deleteDoc(doc(adminDb(), "properties", slug));
+    pingRevalidate();
   },
 
   async listAgents(): Promise<Agent[]> {
@@ -347,12 +361,14 @@ export const api = {
   async createAgent(input: Agent): Promise<Agent> {
     requireConfigured();
     await setDoc(doc(adminDb(), "agents", input.slug), input);
+    pingRevalidate();
     return input;
   },
 
   async updateAgent(slug: string, patch: Partial<Agent>): Promise<Agent> {
     requireConfigured();
     await updateDoc(doc(adminDb(), "agents", slug), patch as Record<string, unknown>);
+    pingRevalidate();
     const snap = await getDoc(doc(adminDb(), "agents", slug));
     return snap.data() as Agent;
   },
@@ -360,6 +376,7 @@ export const api = {
   async deleteAgent(slug: string): Promise<void> {
     requireConfigured();
     await deleteDoc(doc(adminDb(), "agents", slug));
+    pingRevalidate();
   },
 
   async listJournal(): Promise<JournalPost[]> {
@@ -371,12 +388,14 @@ export const api = {
   async createJournal(input: JournalPost): Promise<JournalPost> {
     requireConfigured();
     await setDoc(doc(adminDb(), "journal", input.slug), input);
+    pingRevalidate();
     return input;
   },
 
   async updateJournal(slug: string, patch: Partial<JournalPost>): Promise<JournalPost> {
     requireConfigured();
     await updateDoc(doc(adminDb(), "journal", slug), patch as Record<string, unknown>);
+    pingRevalidate();
     const snap = await getDoc(doc(adminDb(), "journal", slug));
     return snap.data() as JournalPost;
   },
@@ -384,6 +403,7 @@ export const api = {
   async deleteJournal(slug: string): Promise<void> {
     requireConfigured();
     await deleteDoc(doc(adminDb(), "journal", slug));
+    pingRevalidate();
   },
 
   /* -------------------------------------------------------------- enquiries */

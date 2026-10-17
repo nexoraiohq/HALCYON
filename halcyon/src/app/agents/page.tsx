@@ -5,6 +5,8 @@ import { Container, Section, Eyebrow } from "@/components/ui";
 import PageHero from "@/components/page-hero";
 import { getAgents } from "@/lib/server-api";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "People",
   description:

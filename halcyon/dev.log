@@ -302,3 +302,18 @@
 ✓ Finished writing to filesystem cache in 19.2s
  GET /admin/404 404 in 3.5s (next.js: 1408ms, application-code: 2.1s)
 ✓ Finished filesystem cache database compaction in 22.0s
+ GET /admin/404 404 in 5.8s (next.js: 3.1s, application-code: 2.7s)
+ GET /admins 404 in 2.3s (next.js: 1943ms, application-code: 318ms)
+ GET / 200 in 3.0s (next.js: 84ms, application-code: 2.9s)
+ GET /properties 200 in 1666ms (next.js: 308ms, application-code: 1358ms)
+ GET / 200 in 1347ms (next.js: 4ms, application-code: 1343ms)
+ GET / 200 in 5.0s (next.js: 124ms, application-code: 4.9s)
+ GET /properties 200 in 3.6s (next.js: 164ms, application-code: 3.5s)
+ GET /properties 200 in 1515ms (next.js: 13ms, application-code: 1502ms)
+ GET / 200 in 1876ms (next.js: 8ms, application-code: 1868ms)
+✓ Compiled in 13.7s
+ GET / 200 in 4.9s (next.js: 221ms, application-code: 4.7s)
+ GET / 200 in 4.5s (next.js: 13ms, application-code: 4.5s)
+ GET / 200 in 5.9s (next.js: 200ms, application-code: 5.7s)
+ GET / 200 in 5.0s (next.js: 154ms, application-code: 4.9s)
+ GET / 200 in 3.4s (next.js: 19ms, application-code: 3.4s)

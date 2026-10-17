@@ -7,6 +7,8 @@ import PropertyCard from "@/components/property-card";
 import { neighborhoods, testimonials, stats, services } from "@/lib/data";
 import { getJournal, getProperties } from "@/lib/server-api";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Halcyon — Private Real Estate Advisory",
   description:

@@ -6,13 +6,15 @@ import { Container, Eyebrow, TextLink } from "@/components/ui";
 import PropertyCard from "@/components/property-card";
 import FavoriteButton from "@/components/favorite-button";
 import PropertyStatusBadge from "@/components/property-status-badge";
-import { properties as seedProperties } from "@/lib/data";
 import { getAgents, getProperties } from "@/lib/server-api";
+
+export const revalidate = 60;
 
 type Params = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return seedProperties.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  const list = await getProperties();
+  return list.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {

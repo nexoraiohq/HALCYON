@@ -7,3 +7,5 @@ next-env.d.ts
 .vscode
 .DS_Store
 npm-debug.log*
+dev.log
+.env

@@ -18,7 +18,8 @@ export const serverApiConfigured = adminConfigured();
 async function listCol<T>(name: string, fallback: T[]): Promise<T[]> {
   if (!serverApiConfigured) return fallback;
   try {
-    const snap = await adminDb().collection(name).get();
+    const db = await adminDb();
+    const snap = await db.collection(name).get();
     return snap.docs.map((d) => d.data() as T);
   } catch {
     // Transient Firestore error — keep the site alive on presentation copy.

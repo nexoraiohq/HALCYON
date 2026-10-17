@@ -17,10 +17,12 @@ export async function POST(req: Request) {
     }
 
     // Create the Firebase Auth user via the Admin SDK (bypasses client rules).
-    const user = await adminAuth().createUser({ email, password });
+    const auth = await adminAuth();
+    const user = await auth.createUser({ email, password });
 
     // Store the admin membership doc.
-    await adminDb().collection("admins").doc(user.uid).set({
+    const db = await adminDb();
+    await db.collection("admins").doc(user.uid).set({
       email,
       role: "admin",
       createdAt: new Date(),

@@ -1,0 +1,304 @@
+
+> halcyon@1.0.0 dev
+> next dev
+
+▲ Next.js 16.4.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.100.16:3000
+- Environments: .env
+✓ Ready in 2.5s
+✓ Running next.config.ts took 228ms
+
+○ Compiling /admin ...
+ GET /admin 200 in 10.6s (next.js: 1663ms, application-code: 9.0s)
+ GET / 200 in 11.6s (next.js: 41ms, application-code: 11.6s)
+ GET / 200 in 4.6s (next.js: 4ms, application-code: 4.6s)
+ GET /admin 200 in 401ms (next.js: 5ms, application-code: 396ms)
+ GET /admin 200 in 208ms (next.js: 5ms, application-code: 203ms)
+ GET /admin 200 in 120ms (next.js: 5ms, application-code: 115ms)
+ GET /admin 200 in 290ms (next.js: 9ms, application-code: 281ms)
+ GET /admin 200 in 131ms (next.js: 3ms, application-code: 128ms)
+ GET / 200 in 2.9s (next.js: 6ms, application-code: 2.9s)
+✓ Compiled in 2.8s
+✓ Compiled in 786ms
+ GET /admin 200 in 123ms (next.js: 4ms, application-code: 119ms)
+✓ Compiled in 246ms
+ GET /admin 200 in 265ms (next.js: 30ms, application-code: 236ms)
+ GET / 200 in 1830ms (next.js: 9ms, application-code: 1821ms)
+ GET / 200 in 1827ms (next.js: 122ms, application-code: 1706ms)
+✓ Compiled in 640ms
+ GET /admin 200 in 159ms (next.js: 6ms, application-code: 153ms)
+ GET /admin 200 in 112ms (next.js: 4ms, application-code: 108ms)
+ GET /admin 200 in 188ms (next.js: 5ms, application-code: 183ms)
+ GET /admin 200 in 166ms (next.js: 3ms, application-code: 163ms)
+✓ Compiled in 1148ms
+⚠ Fast Refresh had to perform a full reload when ./src/lib/api.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /admin 200 in 484ms (next.js: 17ms, application-code: 467ms)
+⚠ Fast Refresh had to perform a full reload when ./src/lib/api.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/lib/api.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET / 200 in 9.8s (next.js: 14ms, application-code: 9.8s)
+ GET / 200 in 8.3s (next.js: 6ms, application-code: 8.3s)
+ GET /admin 200 in 1059ms (next.js: 119ms, application-code: 940ms)
+ GET /admin 200 in 141ms (next.js: 10ms, application-code: 130ms)
+ GET /admin 200 in 102ms (next.js: 3ms, application-code: 98ms)
+ GET /admin 200 in 268ms (next.js: 34ms, application-code: 234ms)
+ GET / 200 in 2.3s (next.js: 11ms, application-code: 2.3s)
+✓ Compiled in 612ms
+⚠ Fast Refresh had to perform a full reload when ./src/lib/api.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/lib/api.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /admin 200 in 182ms (next.js: 4ms, application-code: 178ms)
+⨯ Error: useAuth must be used inside AuthProvider
+    at useAuth (src\components\auth\auth-context.tsx:32:19)
+    at FavoriteButton (src\components\favorite-button.tsx:19:49)
+  30 | export function useAuth(): AuthCtx {
+  31 |   const ctx = useContext(AuthContext);
+> 32 |   if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+     |                   ^
+  33 |   return ctx;
+  34 | }
+  35 | {
+  digest: '3633793731'
+}
+ GET / 500 in 3.4s (next.js: 23ms, application-code: 3.3s)
+ GET / 200 in 1702ms (next.js: 3ms, application-code: 1699ms)
+ GET /admin 200 in 120ms (next.js: 3ms, application-code: 118ms)
+ GET / 200 in 1348ms (next.js: 3ms, application-code: 1345ms)
+ GET /properties/the-athenaeum-kensington 200 in 7.4s (next.js: 78ms, generate-params: 6.1s, application-code: 1235ms)
+ GET /properties/the-athenaeum-kensington 200 in 1813ms (next.js: 8ms, generate-params: 14ms, application-code: 1791ms)
+ GET /properties/the-athenaeum-kensington 200 in 1232ms (next.js: 4ms, generate-params: 0.1ms, application-code: 1229ms)
+ GET /properties/mansiond 200 in 1081ms (next.js: 3ms, generate-params: 11ms, application-code: 1067ms)
+ GET /properties/north-shore-retreat-aspen 200 in 1438ms (next.js: 4ms, generate-params: 20ms, application-code: 1413ms)
+ GET /contact 200 in 121ms (next.js: 35ms, application-code: 86ms)
+ GET / 200 in 1446ms (next.js: 3ms, application-code: 1443ms)
+ GET /properties/the-orchard-cotswolds 200 in 1168ms (next.js: 5ms, generate-params: 19ms, application-code: 1145ms)
+ GET / 200 in 1108ms (next.js: 6ms, application-code: 1102ms)
+ GET /properties?region=Europe 200 in 553ms (next.js: 38ms, application-code: 515ms)
+ GET /properties?region=Europe 200 in 556ms (next.js: 2ms, application-code: 553ms)
+ GET / 200 in 1100ms (next.js: 5ms, application-code: 1095ms)
+ GET /about 200 in 253ms (next.js: 44ms, application-code: 210ms)
+ GET /services 200 in 172ms (next.js: 32ms, application-code: 139ms)
+ GET /contact 200 in 72ms (next.js: 3ms, application-code: 68ms)
+ GET /agents 200 in 643ms (next.js: 36ms, application-code: 607ms)
+ GET /contact 200 in 60ms (next.js: 3ms, application-code: 57ms)
+ GET /contact 200 in 168ms (next.js: 2ms, application-code: 166ms)
+ GET /agents 200 in 841ms (next.js: 4ms, application-code: 838ms)
+ GET /contact 200 in 98ms (next.js: 4ms, application-code: 94ms)
+ GET /services 200 in 54ms (next.js: 4ms, application-code: 50ms)
+ GET /journal 200 in 728ms (next.js: 29ms, application-code: 699ms)
+ GET /about 200 in 118ms (next.js: 8ms, application-code: 110ms)
+ GET /services 200 in 81ms (next.js: 5ms, application-code: 76ms)
+ GET /journal 200 in 460ms (next.js: 3ms, application-code: 457ms)
+ GET /services 200 in 56ms (next.js: 3ms, application-code: 53ms)
+ GET /properties?region=Mediterranean 200 in 520ms (next.js: 3ms, application-code: 518ms)
+ GET /agents 200 in 1152ms (next.js: 3ms, application-code: 1148ms)
+ GET /about 200 in 54ms (next.js: 3ms, application-code: 51ms)
+ GET /contact 200 in 41ms (next.js: 3ms, application-code: 39ms)
+ GET /journal 200 in 849ms (next.js: 4ms, application-code: 845ms)
+ GET /journal 200 in 858ms (next.js: 1.8ms, application-code: 856ms)
+ GET /privacy 200 in 143ms (next.js: 36ms, application-code: 107ms)
+ GET /terms 200 in 158ms (next.js: 44ms, application-code: 113ms)
+ GET /privacy 200 in 87ms (next.js: 7ms, application-code: 80ms)
+ GET /contact 200 in 48ms (next.js: 3ms, application-code: 45ms)
+ GET / 200 in 1582ms (next.js: 2ms, application-code: 1579ms)
+ GET /contact 200 in 170ms (next.js: 4ms, application-code: 166ms)
+ GET / 200 in 949ms (next.js: 13ms, application-code: 936ms)
+⨯ Error: The destination stream errored while writing data.
+    at ignore-listed frames {
+  digest: '794244646'
+}
+ GET / 200 in 1194ms (next.js: 1085ms, application-code: 109ms)
+⨯ Error: The destination stream errored while writing data.
+    at ignore-listed frames {
+  digest: '794244646'
+}
+ GET / 200 in 3.4s (next.js: 3ms, application-code: 3.3s)
+ GET / 200 in 1367ms (next.js: 3ms, application-code: 1365ms)
+ GET / 200 in 1420ms (next.js: 2ms, application-code: 1418ms)
+ GET / 200 in 1424ms (next.js: 3ms, application-code: 1421ms)
+ GET / 200 in 1156ms (next.js: 3ms, application-code: 1153ms)
+ GET / 200 in 3.0s (next.js: 90ms, application-code: 2.9s)
+ GET / 200 in 103ms (next.js: 25ms, application-code: 77ms)
+ GET / 200 in 2.1s (next.js: 5ms, application-code: 2.1s)
+ GET / 200 in 1094ms (next.js: 3ms, application-code: 1092ms)
+ GET / 200 in 1080ms (next.js: 3ms, application-code: 1077ms)
+ GET / 200 in 1028ms (next.js: 2ms, application-code: 1026ms)
+ GET / 200 in 1312ms (next.js: 2ms, application-code: 1310ms)
+ GET / 200 in 1191ms (next.js: 3ms, application-code: 1188ms)
+ GET /properties 200 in 419ms (next.js: 3ms, application-code: 415ms)
+ GET /properties/mansiond 200 in 1249ms (next.js: 7ms, generate-params: 39ms, application-code: 1203ms)
+ GET /properties/skyline-residence-singapore 200 in 1228ms (next.js: 5ms, generate-params: 13ms, application-code: 1210ms)
+ GET /properties/the-orchard-cotswolds 200 in 1423ms (next.js: 3ms, generate-params: 13ms, application-code: 1407ms)
+ GET /contact 200 in 84ms (next.js: 4ms, application-code: 80ms)
+ GET /properties/the-orchard-cotswolds 200 in 1152ms (next.js: 9ms, generate-params: 17ms, application-code: 1127ms)
+ GET /properties/north-shore-retreat-aspen 200 in 1277ms (next.js: 4ms, generate-params: 13ms, application-code: 1260ms)
+ GET /properties/north-shore-retreat-aspen 200 in 1043ms (next.js: 6ms, generate-params: 13ms, application-code: 1024ms)
+ GET /contact 200 in 59ms (next.js: 3ms, application-code: 56ms)
+ GET /about 200 in 65ms (next.js: 3ms, application-code: 62ms)
+ GET / 200 in 1501ms (next.js: 8ms, application-code: 1493ms)
+ GET /properties/skyline-residence-singapore 200 in 1183ms (next.js: 9ms, generate-params: 25ms, application-code: 1149ms)
+ GET /properties 200 in 967ms (next.js: 5ms, application-code: 962ms)
+ GET / 200 in 1098ms (next.js: 6ms, application-code: 1092ms)
+ GET /properties 200 in 569ms (next.js: 7ms, application-code: 562ms)
+ GET / 200 in 1113ms (next.js: 3ms, application-code: 1111ms)
+ GET / 200 in 5.3s (next.js: 153ms, application-code: 5.1s)
+ GET /journal 200 in 2.8s (next.js: 58ms, application-code: 2.8s)
+ GET /journal 200 in 831ms (next.js: 4ms, application-code: 827ms)
+ GET /properties 200 in 781ms (next.js: 6ms, application-code: 775ms)
+ GET /journal 200 in 852ms (next.js: 3ms, application-code: 848ms)
+ GET /properties/the-orchard-cotswolds 200 in 7.4s (next.js: 6ms, generate-params: 73ms, application-code: 7.3s)
+ GET /properties/the-athenaeum-kensington 200 in 4.3s (next.js: 3ms, generate-params: 13ms, application-code: 4.3s)
+ GET /properties/the-athenaeum-kensington 200 in 2.9s (next.js: 6ms, generate-params: 0.1ms, application-code: 2.9s)
+ GET /properties/the-athenaeum-kensington 200 in 3.0s (next.js: 4ms, generate-params: 0.1ms, application-code: 3.0s)
+ GET /properties/the-athenaeum-kensington 200 in 4.1s (next.js: 3ms, generate-params: 0.1ms, application-code: 4.1s)
+ GET /properties/the-athenaeum-kensington 200 in 2.4s (next.js: 3ms, generate-params: 15ms, application-code: 2.4s)
+ GET /properties/mansiond 200 in 2.5s (next.js: 5ms, generate-params: 15ms, application-code: 2.5s)
+ GET / 200 in 1641ms (next.js: 3ms, application-code: 1638ms)
+ GET /properties 200 in 542ms (next.js: 3ms, application-code: 539ms)
+ GET / 200 in 1692ms (next.js: 4ms, application-code: 1688ms)
+ GET / 200 in 1580ms (next.js: 3ms, application-code: 1577ms)
+ GET / 200 in 1701ms (next.js: 2ms, application-code: 1698ms)
+ GET / 200 in 2.2s (next.js: 4ms, application-code: 2.2s)
+ GET /properties 200 in 684ms (next.js: 4ms, application-code: 680ms)
+ GET / 200 in 1627ms (next.js: 3ms, application-code: 1624ms)
+ GET / 200 in 850ms (next.js: 196ms, application-code: 654ms)
+ GET /properties 200 in 2.1s (next.js: 8ms, application-code: 2.1s)
+ GET / 200 in 3.0s (next.js: 6ms, application-code: 3.0s)
+ GET /properties 200 in 2.5s (next.js: 5ms, application-code: 2.5s)
+ GET /properties 200 in 2.0s (next.js: 28ms, application-code: 1996ms)
+ GET /properties 200 in 1611ms (next.js: 24ms, application-code: 1587ms)
+ GET /properties 200 in 1479ms (next.js: 4ms, application-code: 1475ms)
+ GET /properties?region=Mediterranean 200 in 527ms (next.js: 6ms, application-code: 521ms)
+ GET /properties?region=Americas 200 in 455ms (next.js: 4ms, application-code: 451ms)
+ GET /properties?region=Americas 200 in 1279ms (next.js: 3ms, application-code: 1276ms)
+ GET /properties?region=Americas 200 in 1218ms (next.js: 3ms, application-code: 1214ms)
+ GET /properties?region=Americas 200 in 1421ms (next.js: 3ms, application-code: 1418ms)
+ GET /properties?region=Americas 200 in 1406ms (next.js: 3ms, application-code: 1403ms)
+ GET /properties?region=Americas 200 in 1344ms (next.js: 3ms, application-code: 1341ms)
+ GET /properties/skyline-residence-singapore 200 in 2.2s (next.js: 4ms, generate-params: 48ms, application-code: 2.1s)
+ GET /properties/skyline-residence-singapore 200 in 1920ms (next.js: 8ms, generate-params: 0.1ms, application-code: 1913ms)
+ GET /properties/skyline-residence-singapore 200 in 2.7s (next.js: 4ms, generate-params: 0.0ms, application-code: 2.7s)
+ GET /services 200 in 126ms (next.js: 5ms, application-code: 122ms)
+ GET /services 200 in 81ms (next.js: 3ms, application-code: 78ms)
+ GET /services 200 in 118ms (next.js: 4ms, application-code: 113ms)
+ GET / 200 in 2.1s (next.js: 3ms, application-code: 2.1s)
+ GET / 200 in 2.0s (next.js: 6ms, application-code: 2.0s)
+ GET / 200 in 2.0s (next.js: 3ms, application-code: 2.0s)
+ GET /properties 200 in 1574ms (next.js: 159ms, application-code: 1416ms)
+ GET / 200 in 1720ms (next.js: 5ms, application-code: 1715ms)
+ GET / 200 in 1507ms (next.js: 3ms, application-code: 1503ms)
+ GET /properties/north-shore-retreat-aspen 200 in 1939ms (next.js: 6ms, generate-params: 47ms, application-code: 1886ms)
+ GET /properties/ranch-nine-elk-montana 200 in 882ms (next.js: 8ms, generate-params: 9ms, application-code: 865ms)
+ GET / 200 in 1495ms (next.js: 3ms, application-code: 1492ms)
+ GET /properties 200 in 636ms (next.js: 3ms, application-code: 633ms)
+ GET /properties 200 in 460ms (next.js: 3ms, application-code: 457ms)
+ GET / 200 in 684ms (next.js: 5ms, application-code: 680ms)
+ GET / 200 in 3.9s (next.js: 31ms, application-code: 3.9s)
+ GET / 200 in 1761ms (next.js: 6ms, application-code: 1754ms)
+ GET /services 200 in 110ms (next.js: 11ms, application-code: 99ms)
+ GET / 200 in 1496ms (next.js: 2ms, application-code: 1493ms)
+ GET /services 200 in 74ms (next.js: 3ms, application-code: 71ms)
+ GET /properties 200 in 476ms (next.js: 5ms, application-code: 472ms)
+ GET / 200 in 1468ms (next.js: 3ms, application-code: 1466ms)
+ GET / 200 in 1943ms (next.js: 2ms, application-code: 1941ms)
+ GET / 200 in 1462ms (next.js: 5ms, application-code: 1457ms)
+ GET /properties/the-orchard-cotswolds 200 in 1686ms (next.js: 5ms, generate-params: 35ms, application-code: 1646ms)
+ GET / 200 in 2.0s (next.js: 7ms, application-code: 2.0s)
+ GET / 200 in 23ms (next.js: 3ms, application-code: 20ms)
+ GET / 200 in 1608ms (next.js: 3ms, application-code: 1605ms)
+ GET /properties/the-orchard-cotswolds 200 in 1664ms (next.js: 6ms, generate-params: 10ms, application-code: 1648ms)
+ GET /properties 200 in 819ms (next.js: 6ms, application-code: 813ms)
+ GET /properties/the-orchard-cotswolds 200 in 1507ms (next.js: 3ms, generate-params: 9ms, application-code: 1496ms)
+ GET /properties/the-orchard-cotswolds 200 in 1505ms (next.js: 4ms, generate-params: 13ms, application-code: 1489ms)
+ GET /properties/the-orchard-cotswolds 200 in 1484ms (next.js: 6ms, generate-params: 9ms, application-code: 1469ms)
+ GET / 200 in 1738ms (next.js: 3ms, application-code: 1735ms)
+ GET / 200 in 1556ms (next.js: 4ms, application-code: 1552ms)
+ GET / 200 in 7.3s (next.js: 796ms, application-code: 6.5s)
+ GET /admin 200 in 499ms (next.js: 47ms, application-code: 453ms)
+ GET /admin 200 in 350ms (next.js: 7ms, application-code: 343ms)
+ GET / 200 in 5.0s (next.js: 6ms, application-code: 5.0s)
+ GET / 200 in 2.4s (next.js: 4ms, application-code: 2.4s)
+ GET /admin 200 in 773ms (next.js: 10ms, application-code: 762ms)
+✓ Compiled in 8.1s
+⚠ Fast Refresh had to perform a full reload when ./src/components/auth/auth-context.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/components/auth/auth-context.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/components/auth/auth-context.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/components/auth/auth-context.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /admin 200 in 929ms (next.js: 87ms, application-code: 843ms)
+⨯ Error: useAuth must be used inside AuthProvider
+    at useAuth (src\components\auth\auth-context.tsx:32:19)
+    at FavoriteButton (src\components\favorite-button.tsx:19:49)
+  30 | export function useAuth(): AuthCtx {
+  31 |   const ctx = useContext(AuthContext);
+> 32 |   if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+     |                   ^
+  33 |   return ctx;
+  34 | }
+  35 | {
+  digest: '1847550825'
+}
+⨯ Error: useAuth must be used inside AuthProvider
+    at useAuth (src\components\auth\auth-context.tsx:32:19)
+    at FavoriteButton (src\components\favorite-button.tsx:19:49)
+  30 | export function useAuth(): AuthCtx {
+  31 |   const ctx = useContext(AuthContext);
+> 32 |   if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+     |                   ^
+  33 |   return ctx;
+  34 | }
+  35 | {
+  digest: '1847550825'
+}
+ GET / 500 in 18.6s (next.js: 396ms, application-code: 18.2s)
+ GET / 500 in 14.5s (next.js: 21ms, application-code: 14.4s)
+ GET / 200 in 7.2s (next.js: 124ms, application-code: 7.1s)
+ GET /admin 200 in 2.2s (next.js: 30ms, application-code: 2.2s)
+ GET / 200 in 3.3s (next.js: 15ms, application-code: 3.3s)
+ GET /admin 200 in 770ms (next.js: 4ms, application-code: 766ms)
+ GET / 200 in 3.4s (next.js: 4ms, application-code: 3.4s)
+ GET /admin 200 in 1165ms (next.js: 108ms, application-code: 1057ms)
+○ Compiling /api/admin/register ...
+ POST /api/admin/register 200 in 5.1s (next.js: 1244ms, application-code: 3.8s)
+ GET /admin 200 in 1304ms (next.js: 7ms, application-code: 1297ms)
+ GET /admin 200 in 287ms (next.js: 10ms, application-code: 277ms)
+ POST /api/admin/register 200 in 2.2s (next.js: 6ms, application-code: 2.2s)
+ GET /admin 200 in 207ms (next.js: 4ms, application-code: 202ms)
+ GET /admin 200 in 157ms (next.js: 5ms, application-code: 152ms)
+ GET /admin 200 in 225ms (next.js: 11ms, application-code: 214ms)
+ GET /contact 200 in 510ms (next.js: 140ms, application-code: 370ms)
+ GET /admin 200 in 395ms (next.js: 16ms, application-code: 379ms)
+ GET / 200 in 5.2s (next.js: 92ms, application-code: 5.1s)
+○ Compiling /_not-found/page ...
+ GET /residences 404 in 8.5s (next.js: 8.2s, application-code: 334ms)
+ GET /journal 200 in 4.1s (next.js: 109ms, application-code: 4.0s)
+ GET /contact 200 in 690ms (next.js: 13ms, application-code: 677ms)
+ GET /residences 404 in 5.4s (next.js: 3.5s, application-code: 1832ms)
+ GET /contact 200 in 385ms (next.js: 17ms, application-code: 369ms)
+ GET /admin 200 in 1488ms (next.js: 99ms, application-code: 1389ms)
+ POST /api/admin/register 200 in 4.4s (next.js: 20ms, application-code: 4.4s)
+ GET /admin 200 in 895ms (next.js: 7ms, application-code: 889ms)
+✓ Compiled in 2.7s
+✓ Compiled in 1117ms
+ GET /admin 200 in 840ms (next.js: 181ms, application-code: 658ms)
+ POST /api/admin/register 400 in 1244ms (next.js: 15ms, application-code: 1229ms)
+ GET /admin 200 in 240ms (next.js: 4ms, application-code: 236ms)
+ GET /admin 200 in 209ms (next.js: 6ms, application-code: 203ms)
+ POST /api/admin/register 200 in 2.1s (next.js: 8ms, application-code: 2.1s)
+ GET /admin 200 in 171ms (next.js: 3ms, application-code: 167ms)
+ GET /admin 200 in 1432ms (next.js: 156ms, application-code: 1276ms)
+ POST /api/admin/register 200 in 2.7s (next.js: 19ms, application-code: 2.7s)
+ GET /admin 200 in 5.2s (next.js: 126ms, application-code: 5.0s)
+ GET /admins 404 in 2.5s (next.js: 1723ms, application-code: 750ms)
+ GET /admin/404 404 in 1603ms (next.js: 1304ms, application-code: 299ms)
+✓ Compiled in 4.3s
+○ Compiling / ...
+ GET /admin/404 404 in 5.4s (next.js: 5.1s, application-code: 264ms)
+ GET /admin/404 404 in 1882ms (next.js: 70ms, application-code: 1812ms)
+ GET / 200 in 10.4s (next.js: 8ms, application-code: 10.4s)
+ GET / 200 in 12.2s (next.js: 515ms, application-code: 11.7s)
+✓ Compiled in 25.2s
+○ Compiling / ...
+ GET /admin/404 404 in 42s (next.js: 41s, application-code: 1215ms)
+ GET / 200 in 9.4s (next.js: 3.5s, application-code: 5.9s)
+✓ Finished writing to filesystem cache in 19.2s
+ GET /admin/404 404 in 3.5s (next.js: 1408ms, application-code: 2.1s)
+✓ Finished filesystem cache database compaction in 22.0s

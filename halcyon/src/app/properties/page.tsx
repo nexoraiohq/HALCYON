@@ -3,6 +3,8 @@ import PageHero from "@/components/page-hero";
 import PropertyBrowser from "@/components/property-browser";
 import { getProperties } from "@/lib/server-api";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Residences",
   description:
@@ -10,13 +12,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/properties" },
 };
 
-export default async function PropertiesPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ region?: string | string[] }>;
-}) {
-  const sp = await searchParams;
-  const initialRegion = typeof sp.region === "string" ? sp.region : undefined;
+export default async function PropertiesPage() {
   const list = await getProperties();
 
   const jsonLd = {
@@ -63,7 +59,7 @@ export default async function PropertiesPage({
         meta={`${list.length} residences · 6 countries`}
       />
 
-      <PropertyBrowser key={initialRegion ?? "all"} properties={list} initialRegion={initialRegion}>
+      <PropertyBrowser properties={list}>
         <div className="reveal card mt-24 p-10 text-center sm:p-16">
           <p className="display max-w-[22ch] mx-auto text-headline">
             Not seeing it? Most are never listed.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Container } from "@/components/ui";
 import PropertyCard from "@/components/property-card";
 import type { Property } from "@/lib/data";
@@ -8,22 +8,31 @@ import type { Property } from "@/lib/data";
 const SORTS = ["Featured", "Price · low to high", "Price · high to low"] as const;
 type Sort = (typeof SORTS)[number];
 
+function readRegionParam(): string | null {
+  return new URLSearchParams(window.location.search).get("region");
+}
+
 export default function PropertyBrowser({
   properties,
-  initialRegion,
   children,
 }: {
   properties: Property[];
-  initialRegion?: string;
   children?: React.ReactNode;
 }) {
   const regions = useMemo(
     () => ["All regions", ...Array.from(new Set(properties.map((p) => p.region)))],
     [properties],
   );
-  const [region, setRegion] = useState(() =>
-    initialRegion && regions.includes(initialRegion) ? initialRegion : regions[0],
+  const [tabRegion, setTabRegion] = useState<string | null>(null);
+  const urlRegion = useSyncExternalStore(
+    (onStoreChange) => {
+      window.addEventListener("popstate", onStoreChange);
+      return () => window.removeEventListener("popstate", onStoreChange);
+    },
+    readRegionParam,
+    () => null,
   );
+  const region = tabRegion ?? (urlRegion && regions.includes(urlRegion) ? urlRegion : regions[0]);
   const [sort, setSort] = useState<Sort>(SORTS[0]);
   const gridRef = useRef<HTMLUListElement>(null);
   const mounted = useRef(false);
@@ -61,7 +70,7 @@ export default function PropertyBrowser({
                 key={r}
                 type="button"
                 aria-pressed={region === r}
-                onClick={() => setRegion(r)}
+                onClick={() => setTabRegion(r)}
                 className={`${tabBase} ${
                   region === r
                     ? "border-b-ink text-ink"

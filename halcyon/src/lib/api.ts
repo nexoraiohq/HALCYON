@@ -225,6 +225,17 @@ export const api = {
 
   /* -------------------------------------------------- admin account creation */
 
+  async adminSignupOpen(): Promise<boolean> {
+    try {
+      const res = await fetch("/api/admin/register", { cache: "no-store" });
+      if (!res.ok) return false;
+      const data = (await res.json()) as { open?: boolean };
+      return data.open === true;
+    } catch {
+      return false;
+    }
+  },
+
   /** Create a new admin account via the server route (bypasses client Firestore rules). */
   async registerAdmin(email: string, password: string): Promise<void> {
     requireConfigured();

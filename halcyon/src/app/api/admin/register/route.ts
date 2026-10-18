@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
 import { adminAuth, adminDb, adminConfigured } from "@/lib/firebase-admin";
 
+export async function GET() {
+  if (!adminConfigured()) return NextResponse.json({ open: false });
+  try {
+    const db = await adminDb();
+    const snap = await db.collection("admins").limit(1).get();
+    return NextResponse.json({ open: snap.empty });
+  } catch {
+    return NextResponse.json({ open: false });
+  }
+}
+
 export async function POST(req: Request) {
   if (!adminConfigured()) {
     return NextResponse.json({ error: "Server is not configured." }, { status: 503 });
@@ -16,12 +27,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Password needs at least 6 characters." }, { status: 400 });
     }
 
+    const db = await adminDb();
+    const existing = await db.collection("admins").limit(1).get();
+    if (!existing.empty) {
+      return NextResponse.json(
+        { error: "An administrator account already exists. Sign in instead.", code: "admin_exists" },
+        { status: 409 },
+      );
+    }
+
     // Create the Firebase Auth user via the Admin SDK (bypasses client rules).
     const auth = await adminAuth();
     const user = await auth.createUser({ email, password });
 
     // Store the admin membership doc.
-    const db = await adminDb();
     await db.collection("admins").doc(user.uid).set({
       email,
       role: "admin",

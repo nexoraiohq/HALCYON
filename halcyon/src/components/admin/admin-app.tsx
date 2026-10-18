@@ -681,6 +681,11 @@ function SignIn({ status, onLogin, onRegister }: { status: ApiStatus; onLogin: (
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [signupOpen, setSignupOpen] = useState(false);
+
+  useEffect(() => {
+    api.adminSignupOpen().then(setSignupOpen);
+  }, []);
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -693,12 +698,19 @@ function SignIn({ status, onLogin, onRegister }: { status: ApiStatus; onLogin: (
         await onLogin(email.trim(), password);
       } else {
         await onRegister(email.trim(), password);
+        setSignupOpen(false);
         setNotice("Account created. Sign in to continue.");
         setMode("signin");
         setPassword("");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign-in failed.");
+      if (mode === "signup") {
+        api.adminSignupOpen().then((open) => {
+          setSignupOpen(open);
+          if (!open) setMode("signin");
+        });
+      }
     } finally {
       setBusy(false);
     }
@@ -755,17 +767,19 @@ function SignIn({ status, onLogin, onRegister }: { status: ApiStatus; onLogin: (
           <button type="submit" disabled={busy} className="btn btn-solid w-full disabled:opacity-55">
             {busy ? (mode === "signin" ? "Signing in…" : "Creating…") : mode === "signin" ? "Sign in" : "Create account"}
           </button>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => {
-              setMode(mode === "signin" ? "signup" : "signin");
-              setError("");
-            }}
-            className="btn btn-quiet w-full disabled:opacity-55"
-          >
-            {mode === "signin" ? "Create an account" : "Back to sign in"}
-          </button>
+          {(mode === "signup" || signupOpen) && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                setMode(mode === "signin" ? "signup" : "signin");
+                setError("");
+              }}
+              className="btn btn-quiet w-full disabled:opacity-55"
+            >
+              {mode === "signin" ? "Create an account" : "Back to sign in"}
+            </button>
+          )}
           <p className="text-center text-[0.72rem] leading-relaxed text-fog">
             <>
               API · <span className="num">{API_BASE}</span>

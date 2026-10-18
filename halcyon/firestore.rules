@@ -53,11 +53,16 @@ service cloud.firestore {
     }
 
     match /admins/{uid} {
+      // A signed-in user may read only their own membership doc — used to derive
+      // the visitor role and to keep admin accounts off the public site.
       allow read: if request.auth != null && request.auth.uid == uid;
-      // Owner may update only the email field on their own doc (after re-auth).
-      allow update: if request.auth != null && request.auth.uid == uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email']);
-      allow write: if false; // create/delete: seed script / Admin SDK only
+
+      // Membership is immutable from the client: create, update, and delete all
+      // require the Admin SDK on the server. This is the database backstop for
+      // the bootstrap gate on /api/admin/register — once any admin exists the
+      // route stops accepting sign-ups, and even if that check were bypassed no
+      // client could ever write an admin membership into Firestore.
+      allow create, update, delete: if false;
     }
   }
 }

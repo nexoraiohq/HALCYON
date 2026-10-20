@@ -49,7 +49,7 @@ export default async function PropertyPage({ params }: Params) {
     "@context": "https://schema.org",
     "@type": "Residence",
     name: p.title,
-    url: `https://www.halcyon.estate/properties/${p.slug}`,
+    url: `https://www.vensamproperties.estate/properties/${p.slug}`,
     description: p.blurb,
     image: p.image,
     dateBuilt: String(p.year),
@@ -70,8 +70,8 @@ export default async function PropertyPage({ params }: Params) {
     },
     broker: {
       "@type": "RealEstateAgent",
-      name: "Halcyon Private Real Estate",
-      url: "https://www.halcyon.estate",
+      name: "Vensam Properties",
+      url: "https://www.vensamproperties.estate",
     },
   };
 

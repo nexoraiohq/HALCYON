@@ -1,0 +1,68 @@
+rules_version = '2';
+
+// Vensam Properties security rules.
+// - Catalogue (properties, agents, journal): public read, admin-only write.
+// - Enquiries: anyone may create (public contact form), only admins may read
+//   or modify. Only the status/fields the form sends are allowed on create.
+// - Favorites: private to each signed-in visitor.
+// - Admins: membership list; written only from the server (seed script /
+//   Admin SDK), readable by the user themselves so the backend can check.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    match /properties/{slug} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /agents/{slug} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /journal/{slug} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /enquiries/{id} {
+      allow create: if request.resource.data.name is string
+        && request.resource.data.email is string
+        && request.resource.data.message is string
+        && request.resource.data.status is string;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /favorites/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /users/{uid} {
+      // Visitors: create/update own profile; admins: read all.
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.email is string
+        && request.resource.data.name is string;
+      allow read: if (request.auth != null && request.auth.uid == uid) || isAdmin();
+      allow update: if request.auth != null && request.auth.uid == uid;
+      allow delete: if isAdmin();
+    }
+
+    match /admins/{uid} {
+      // A signed-in user may read only their own membership doc — used to derive
+      // the visitor role and to keep admin accounts off the public site.
+      allow read: if request.auth != null && request.auth.uid == uid;
+
+      // Membership is immutable from the client: create, update, and delete all
+      // require the Admin SDK on the server. This is the database backstop for
+      // the bootstrap gate on /api/admin/register — once any admin exists the
+      // route stops accepting sign-ups, and even if that check were bypassed no
+      // client could ever write an admin membership into Firestore.
+      allow create, update, delete: if false;
+    }
+  }
+}

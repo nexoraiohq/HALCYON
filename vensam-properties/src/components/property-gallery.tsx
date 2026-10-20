@@ -123,25 +123,15 @@ export default function PropertyGallery({
         </button>
 
         {total > 1 && (
-          <div className="no-bar hidden gap-3 overflow-y-auto sm:col-span-4 sm:flex sm:min-h-0 sm:flex-col">
+          <div className="no-bar flex gap-3 overflow-x-auto sm:col-span-4 sm:min-h-0 sm:flex-col sm:overflow-x-hidden sm:overflow-y-auto">
             {images.map((src, i) => (
-              <div key={i} className="relative aspect-[3/2] w-full shrink-0">
+              <div key={i} className="relative aspect-[3/2] w-28 shrink-0 sm:w-full">
                 {thumb(src, i, "absolute inset-0 h-full w-full")}
               </div>
             ))}
           </div>
         )}
       </div>
-
-      {total > 1 && (
-        <div className="no-bar mt-3 flex gap-3 overflow-x-auto pb-1 sm:hidden">
-          {images.map((src, i) => (
-            <div key={i} className="relative aspect-[3/2] w-28 shrink-0">
-              {thumb(src, i, "absolute inset-0 h-full w-full")}
-            </div>
-          ))}
-        </div>
-      )}
 
       {open && (
         <div

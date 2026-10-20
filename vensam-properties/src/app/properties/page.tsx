@@ -12,14 +12,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/properties" },
 };
 
-export default async function PropertiesPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const sp = await searchParams;
-  const initialRegion = typeof sp.region === "string" ? sp.region : null;
-  const initialStatus = typeof sp.status === "string" ? sp.status : null;
+export default async function PropertiesPage() {
   const list = await getProperties();
   const regionCount = new Set(list.map((p) => p.region)).size;
 
@@ -67,7 +60,7 @@ export default async function PropertiesPage({
         meta={`${list.length} ${list.length === 1 ? "residence" : "residences"} · ${regionCount} ${regionCount === 1 ? "region" : "regions"}`}
       />
 
-      <PropertyBrowser properties={list} initialRegion={initialRegion} initialStatus={initialStatus}>
+      <PropertyBrowser properties={list}>
         <div className="reveal card mt-24 p-10 text-center sm:p-16">
           <p className="display max-w-[22ch] mx-auto text-headline">
             Not seeing it? Most are never listed.

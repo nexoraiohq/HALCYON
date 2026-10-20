@@ -88,7 +88,6 @@ export default async function PropertyPage({ params }: Params) {
     name: p.title,
     url,
     description: p.blurb,
-    image: p.image,
     dateBuilt: p.year ? String(p.year) : undefined,
     floorSize: p.area > 0 ? { "@type": "QuantitativeValue", value: p.area, unitCode: "FTK" } : undefined,
     numberOfBedrooms: p.beds > 0 ? p.beds : undefined,

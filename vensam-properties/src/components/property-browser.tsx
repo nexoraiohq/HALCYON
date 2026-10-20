@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Container } from "@/components/ui";
 import PropertyCard from "@/components/property-card";
 import { PROPERTY_STATUSES, type PropertyStatus } from "@/lib/api-types";
@@ -10,30 +9,67 @@ import type { Property } from "@/lib/data";
 const SORTS = ["Featured", "Price · low to high", "Price · high to low"] as const;
 type Sort = (typeof SORTS)[number];
 
+/**
+ * URL store for the filter bar.
+ *
+ * Filters live in the address bar (shareable, back/forward-friendly) but every
+ * change is applied instantly in the browser: we subscribe to history
+ * pushState/replaceState/popstate and read `location` directly, so filtering
+ * never waits on a server roundtrip and the page itself stays fully static.
+ */
+type Listener = () => void;
+const urlListeners = new Set<Listener>();
+let historyPatched = false;
+
+function ensureHistoryPatch(): void {
+  if (historyPatched || typeof window === "undefined") return;
+  historyPatched = true;
+  const notify = () => urlListeners.forEach((l) => l());
+  const push = window.history.pushState.bind(window.history);
+  const replace = window.history.replaceState.bind(window.history);
+  window.history.pushState = ((...args: Parameters<History["pushState"]>) => {
+    push(...args);
+    notify();
+  }) as History["pushState"];
+  window.history.replaceState = ((...args: Parameters<History["replaceState"]>) => {
+    replace(...args);
+    notify();
+  }) as History["replaceState"];
+  window.addEventListener("popstate", notify);
+}
+
+function subscribeUrl(onChange: Listener): () => void {
+  ensureHistoryPatch();
+  urlListeners.add(onChange);
+  return () => {
+    urlListeners.delete(onChange);
+  };
+}
+
+const readUrl = (): string =>
+  typeof window === "undefined" ? "" : window.location.pathname + window.location.search;
+
 export default function PropertyBrowser({
   properties,
-  initialRegion = null,
-  initialStatus = null,
   children,
 }: {
   properties: Property[];
-  initialRegion?: string | null;
-  initialStatus?: string | null;
   children?: React.ReactNode;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
+  const search = useSyncExternalStore(subscribeUrl, readUrl, () => "");
+  const params = useMemo(() => new URLSearchParams(search.split("?")[1] ?? ""), [search]);
+  const paramRegion = params.get("region");
+  const paramStatus = params.get("status");
 
   const regions = useMemo(
     () => ["All regions", ...Array.from(new Set(properties.map((p) => p.region)))],
     [properties],
   );
 
-  const region =
-    initialRegion && regions.includes(initialRegion) ? initialRegion : regions[0];
+  const region = paramRegion && regions.includes(paramRegion) ? paramRegion : regions[0];
   const status =
-    initialStatus && PROPERTY_STATUSES.includes(initialStatus as PropertyStatus)
-      ? (initialStatus as PropertyStatus)
+    paramStatus && PROPERTY_STATUSES.includes(paramStatus as PropertyStatus)
+      ? (paramStatus as PropertyStatus)
       : null;
 
   const [sort, setSort] = useState<Sort>(SORTS[0]);
@@ -60,14 +96,15 @@ export default function PropertyBrowser({
       .forEach((n) => n.classList.add("is-in"));
   }, [region, status, sort]);
 
-  // Filters live in the URL (shareable, back/forward-friendly). The next URL is
-  // built from the current one so region, status and any other params coexist.
   const setParam = (key: "region" | "status", value: string | null) => {
     const qs = new URLSearchParams(window.location.search);
     if (value === null) qs.delete(key);
     else qs.set(key, value);
     const next = qs.toString();
-    router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
+    const path = window.location.pathname;
+    // replaceState keeps history clean (no entry per click) and notifies the
+    // store above — the grid re-renders synchronously, no network involved.
+    window.history.replaceState(window.history.state, "", next ? `${path}?${next}` : path);
   };
 
   const chipBase =
@@ -81,11 +118,11 @@ export default function PropertyBrowser({
   return (
     <>
       {/* Filters — three labelled groups: availability, region, order.
-          Single compact row on desktop (sticky); stacked and static on small
-          screens so the bar never eats the viewport while reading cards. */}
-      <div className="border-b border-rule/70 bg-white/80 backdrop-blur-xl lg:sticky lg:top-[52px] lg:z-30">
+          One compact sticky row from tablet up; stacked and static below so
+          the bar never eats the viewport while reading cards. */}
+      <div className="border-b border-rule/70 bg-white/80 backdrop-blur-xl md:sticky md:top-[52px] md:z-30">
         <Container>
-          <div className="flex flex-col gap-3 py-3.5 lg:flex-row lg:items-center lg:gap-6">
+          <div className="flex flex-col gap-3 py-3.5 md:flex-row md:items-center md:gap-6">
             <div
               role="group"
               aria-label="Filter by availability"
@@ -131,7 +168,7 @@ export default function PropertyBrowser({
               ))}
             </div>
 
-            <label className="flex shrink-0 items-center gap-2.5 self-start lg:self-auto">
+            <label className="flex shrink-0 items-center gap-2.5 self-start md:self-auto">
               <span className="text-[0.78rem] tracking-[-0.004em] text-slate">Sort</span>
               <span className="relative">
                 <select

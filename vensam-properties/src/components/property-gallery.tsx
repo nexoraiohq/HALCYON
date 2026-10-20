@@ -101,7 +101,7 @@ export default function PropertyGallery({
           type="button"
           onClick={() => setOpen(true)}
           aria-label={`View full screen — ${altFor(safeIdx)}`}
-          className="relative aspect-[16/10] w-full cursor-zoom-in overflow-hidden rounded-card sm:col-span-8 sm:aspect-auto sm:h-[58vh]"
+          className="relative aspect-[3/2] w-full cursor-zoom-in overflow-hidden rounded-card sm:col-span-8"
         >
           <Img
             src={images[safeIdx]}
@@ -123,9 +123,9 @@ export default function PropertyGallery({
         </button>
 
         {total > 1 && (
-          <div className="no-bar hidden gap-3 overflow-y-auto sm:col-span-4 sm:flex sm:h-[58vh] sm:flex-col">
+          <div className="no-bar hidden gap-3 overflow-y-auto sm:col-span-4 sm:flex sm:min-h-0 sm:flex-col">
             {images.map((src, i) => (
-              <div key={i} className="relative aspect-[16/10] w-full shrink-0">
+              <div key={i} className="relative aspect-[3/2] w-full shrink-0">
                 {thumb(src, i, "absolute inset-0 h-full w-full")}
               </div>
             ))}
@@ -136,7 +136,7 @@ export default function PropertyGallery({
       {total > 1 && (
         <div className="no-bar mt-3 flex gap-3 overflow-x-auto pb-1 sm:hidden">
           {images.map((src, i) => (
-            <div key={i} className="relative aspect-[4/3] w-28 shrink-0">
+            <div key={i} className="relative aspect-[3/2] w-28 shrink-0">
               {thumb(src, i, "absolute inset-0 h-full w-full")}
             </div>
           ))}

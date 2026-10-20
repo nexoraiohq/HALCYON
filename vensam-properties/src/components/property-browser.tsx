@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Container } from "@/components/ui";
 import PropertyCard from "@/components/property-card";
 import { PROPERTY_STATUSES, type PropertyStatus } from "@/lib/api-types";
@@ -9,45 +10,32 @@ import type { Property } from "@/lib/data";
 const SORTS = ["Featured", "Price · low to high", "Price · high to low"] as const;
 type Sort = (typeof SORTS)[number];
 
-function readRegionParam(): string | null {
-  return new URLSearchParams(window.location.search).get("region");
-}
-
-function readStatusParam(): string | null {
-  return new URLSearchParams(window.location.search).get("status");
-}
-
 export default function PropertyBrowser({
   properties,
+  initialRegion = null,
+  initialStatus = null,
   children,
 }: {
   properties: Property[];
+  initialRegion?: string | null;
+  initialStatus?: string | null;
   children?: React.ReactNode;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const regions = useMemo(
     () => ["All regions", ...Array.from(new Set(properties.map((p) => p.region)))],
     [properties],
   );
-  const [tabRegion, setTabRegion] = useState<string | null>(null);
-  const urlRegion = useSyncExternalStore(
-    (onStoreChange) => {
-      window.addEventListener("popstate", onStoreChange);
-      return () => window.removeEventListener("popstate", onStoreChange);
-    },
-    readRegionParam,
-    () => null,
-  );
-  const region = tabRegion ?? (urlRegion && regions.includes(urlRegion) ? urlRegion : regions[0]);
-  const [tabStatus, setTabStatus] = useState<string | null>(null);
-  const urlStatus = useSyncExternalStore(
-    (onStoreChange) => {
-      window.addEventListener("popstate", onStoreChange);
-      return () => window.removeEventListener("popstate", onStoreChange);
-    },
-    readStatusParam,
-    () => null,
-  );
-  const status = tabStatus ?? (urlStatus && PROPERTY_STATUSES.includes(urlStatus as PropertyStatus) ? urlStatus : null);
+
+  const region =
+    initialRegion && regions.includes(initialRegion) ? initialRegion : regions[0];
+  const status =
+    initialStatus && PROPERTY_STATUSES.includes(initialStatus as PropertyStatus)
+      ? (initialStatus as PropertyStatus)
+      : null;
+
   const [sort, setSort] = useState<Sort>(SORTS[0]);
   const gridRef = useRef<HTMLUListElement>(null);
   const mounted = useRef(false);
@@ -72,6 +60,16 @@ export default function PropertyBrowser({
       .forEach((n) => n.classList.add("is-in"));
   }, [region, status, sort]);
 
+  // Filters live in the URL (shareable, back/forward-friendly). The next URL is
+  // built from the current one so region, status and any other params coexist.
+  const setParam = (key: "region" | "status", value: string | null) => {
+    const qs = new URLSearchParams(window.location.search);
+    if (value === null) qs.delete(key);
+    else qs.set(key, value);
+    const next = qs.toString();
+    router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
+  };
+
   const tabBase =
     "shrink-0 border-b-2 px-4 py-4 text-[0.82rem] tracking-[-0.006em] transition-colors duration-300";
 
@@ -85,7 +83,7 @@ export default function PropertyBrowser({
                 key={r}
                 type="button"
                 aria-pressed={region === r}
-                onClick={() => setTabRegion(r)}
+                onClick={() => setParam("region", r === "All regions" ? null : r)}
                 className={`${tabBase} ${
                   region === r
                     ? "border-b-ink text-ink"
@@ -95,17 +93,31 @@ export default function PropertyBrowser({
                 {r}
               </button>
             ))}
-            {status && (
-              <button
-                type="button"
-                aria-label={`Clear status filter — ${status}`}
-                onClick={() => setTabStatus(null)}
-                className="my-2 ml-1 mr-2 flex shrink-0 items-center gap-1.5 rounded-pill bg-ink px-3.5 py-1.5 text-[0.78rem] text-white transition-opacity hover:opacity-80"
-              >
-                {status}
-                <span aria-hidden className="text-[0.9rem] leading-none">×</span>
-              </button>
-            )}
+
+            <span className="flex shrink-0 items-center gap-2 self-center pl-3 pr-1">
+              {PROPERTY_STATUSES.map((s) => {
+                const on = status === s;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    aria-pressed={on}
+                    aria-label={
+                      on ? `Clear filter — show all residences` : `Show only residences for ${s === "For Sale" ? "sale" : "rent"}`
+                    }
+                    onClick={() => setParam("status", on ? null : s)}
+                    className={`shrink-0 rounded-pill border px-3.5 py-1.5 text-[0.78rem] tracking-[-0.004em] transition-colors duration-300 ${
+                      on
+                        ? "border-ink bg-ink text-white"
+                        : "border-rule text-slate hover:border-ink hover:text-ink"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                );
+              })}
+            </span>
+
             <span className="ml-auto flex shrink-0 items-stretch">
               {SORTS.map((s) => (
                 <button
@@ -140,6 +152,11 @@ export default function PropertyBrowser({
               </li>
             ))}
           </ul>
+          {list.length === 0 && (
+            <p className="mt-10 rounded-card border border-dashed border-rule bg-mist px-6 py-10 text-center text-[0.95rem] text-slate">
+              No residences match this filter — try another region or status.
+            </p>
+          )}
           {children}
         </Container>
       </section>

@@ -8,12 +8,12 @@ import { Chevron } from "@/components/ui";
 
 const PROPERTIES = [
   {
-    href: "/properties",
+    href: "/properties?status=For+Sale",
     label: "Buy a property",
     caption: "Residences currently offered",
   },
   {
-    href: "/properties",
+    href: "/properties?status=For+Rent",
     label: "Rent a property",
     caption: "Homes available to lease",
   },

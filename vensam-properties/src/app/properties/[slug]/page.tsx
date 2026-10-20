@@ -222,9 +222,9 @@ export default async function PropertyPage({ params }: Params) {
               </div>
 
               {/* Features & amenities */}
-              {p.features.length > 0 && (
-                <div className="reveal mt-14" style={{ ["--reveal-delay" as string]: "260ms" }}>
-                  <Eyebrow className="text-brass">Features &amp; amenities</Eyebrow>
+              <div className="reveal mt-14" style={{ ["--reveal-delay" as string]: "260ms" }}>
+                <Eyebrow className="text-brass">Features &amp; amenities</Eyebrow>
+                {p.features.length > 0 ? (
                   <ul className="mt-6 grid gap-px overflow-hidden rounded-card bg-rule sm:grid-cols-2">
                     {p.features.map((f) => (
                       <li key={f} className="bg-mist px-5 py-4 text-[0.9rem] text-slate">
@@ -232,8 +232,13 @@ export default async function PropertyPage({ params }: Params) {
                       </li>
                     ))}
                   </ul>
-                </div>
-              )}
+                ) : (
+                  <p className="mt-6 rounded-card border border-dashed border-rule bg-mist px-5 py-6 text-[0.9rem] leading-relaxed text-slate">
+                    Features and amenities are listed per listing — ask us for the full
+                    specification of this property.
+                  </p>
+                )}
+              </div>
 
               {/* Property details */}
               <div className="reveal mt-14">

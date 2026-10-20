@@ -70,71 +70,94 @@ export default function PropertyBrowser({
     router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
   };
 
-  const tabBase =
-    "shrink-0 border-b-2 px-4 py-4 text-[0.82rem] tracking-[-0.006em] transition-colors duration-300";
+  const chipBase =
+    "shrink-0 whitespace-nowrap rounded-pill border px-3.5 py-1.5 text-[0.78rem] font-medium tracking-[-0.004em] transition-colors duration-300";
+
+  const availability: { key: string; value: string | null; label: string }[] = [
+    { key: "all", value: null, label: "All" },
+    ...PROPERTY_STATUSES.map((s) => ({ key: s, value: s as string | null, label: s })),
+  ];
 
   return (
     <>
-      <div className="sticky top-[52px] z-30 border-b border-rule/70 bg-white/80 backdrop-blur-xl backdrop-saturate-180">
+      {/* Filters — three labelled groups: availability, region, order.
+          Single compact row on desktop (sticky); stacked and static on small
+          screens so the bar never eats the viewport while reading cards. */}
+      <div className="border-b border-rule/70 bg-white/80 backdrop-blur-xl lg:sticky lg:top-[52px] lg:z-30">
         <Container>
-          <div className="no-bar flex items-stretch overflow-x-auto">
-            {regions.map((r, i) => (
-              <button
-                key={r}
-                type="button"
-                aria-pressed={region === r}
-                onClick={() => setParam("region", r === "All regions" ? null : r)}
-                className={`${tabBase} ${
-                  region === r
-                    ? "border-b-ink text-ink"
-                    : "border-b-transparent text-slate hover:text-ink"
-                } ${i === 0 ? "pl-0" : ""}`}
-              >
-                {r}
-              </button>
-            ))}
-
-            <span className="flex shrink-0 items-center gap-2 self-center pl-3 pr-1">
-              {PROPERTY_STATUSES.map((s) => {
-                const on = status === s;
+          <div className="flex flex-col gap-3 py-3.5 lg:flex-row lg:items-center lg:gap-6">
+            <div
+              role="group"
+              aria-label="Filter by availability"
+              className="inline-flex w-fit shrink-0 rounded-pill border border-rule bg-white p-1"
+            >
+              {availability.map((o) => {
+                const on = status === o.value;
                 return (
                   <button
-                    key={s}
+                    key={o.key}
                     type="button"
                     aria-pressed={on}
-                    aria-label={
-                      on ? `Clear filter — show all residences` : `Show only residences for ${s === "For Sale" ? "sale" : "rent"}`
-                    }
-                    onClick={() => setParam("status", on ? null : s)}
-                    className={`shrink-0 rounded-pill border px-3.5 py-1.5 text-[0.78rem] tracking-[-0.004em] transition-colors duration-300 ${
-                      on
-                        ? "border-ink bg-ink text-white"
-                        : "border-rule text-slate hover:border-ink hover:text-ink"
+                    onClick={() => setParam("status", o.value)}
+                    className={`rounded-pill px-3.5 py-1.5 text-[0.78rem] font-medium tracking-[-0.004em] transition-colors duration-300 ${
+                      on ? "bg-ink text-white" : "text-slate hover:text-ink"
                     }`}
                   >
-                    {s}
+                    {o.label}
                   </button>
                 );
               })}
-            </span>
+            </div>
 
-            <span className="ml-auto flex shrink-0 items-stretch">
-              {SORTS.map((s) => (
+            <div
+              role="group"
+              aria-label="Filter by region"
+              className="no-bar flex min-w-0 flex-1 items-center gap-2 overflow-x-auto"
+            >
+              {regions.map((r) => (
                 <button
-                  key={s}
+                  key={r}
                   type="button"
-                  aria-pressed={sort === s}
-                  onClick={() => setSort(s)}
-                  className={`${tabBase} ${
-                    sort === s
-                      ? "border-b-ink text-ink"
-                      : "border-b-transparent text-slate hover:text-ink"
+                  aria-pressed={region === r}
+                  onClick={() => setParam("region", r === "All regions" ? null : r)}
+                  className={`${chipBase} ${
+                    region === r
+                      ? "border-ink bg-ink text-white"
+                      : "border-rule text-slate hover:border-ink hover:text-ink"
                   }`}
                 >
-                  {s}
+                  {r}
                 </button>
               ))}
-            </span>
+            </div>
+
+            <label className="flex shrink-0 items-center gap-2.5 self-start lg:self-auto">
+              <span className="text-[0.78rem] tracking-[-0.004em] text-slate">Sort</span>
+              <span className="relative">
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as Sort)}
+                  aria-label="Sort residences"
+                  className="cursor-pointer appearance-none rounded-pill border border-rule bg-white py-2 pl-3.5 pr-8 text-[0.78rem] font-medium tracking-[-0.004em] text-ink transition-colors duration-300 hover:border-ink focus:border-ink focus:outline-none"
+                >
+                  {SORTS.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  aria-hidden
+                  viewBox="0 0 24 24"
+                  className="pointer-events-none absolute right-2.5 top-1/2 size-4 -translate-y-1/2 text-slate"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+            </label>
           </div>
         </Container>
       </div>

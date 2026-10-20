@@ -10,6 +10,11 @@ export type Property = {
   lot: string;
   status: "For Sale" | "For Rent";
   sold?: boolean;
+  parking?: number | null;
+  floor?: string | null;
+  furnishing?: "Furnished" | "Semi-furnished" | "Unfurnished" | null;
+  condition?: "New" | "Excellent" | "Good" | "Fair" | "Development opportunity" | null;
+  tenure?: "Freehold" | "Leasehold" | null;
   type: string;
   year: number;
   image: string;
@@ -20,6 +25,13 @@ export type Property = {
   featured?: boolean;
   agent: string;
 };
+
+/** The agency's single contact number — used for every call and WhatsApp action. */
+export const AGENCY_PHONE = {
+  display: "0722 473703",
+  tel: "+254722473703",
+  whatsapp: "254722473703",
+} as const;
 
 export const properties: Property[] = [
   {

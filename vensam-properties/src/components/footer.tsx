@@ -42,7 +42,7 @@ const OFFICES = [
 export default function Footer() {
   return (
     <footer className="bg-mist text-ink">
-      <Container className="py-14 sm:py-16">
+      <Container className="pb-28 pt-14 sm:py-16">
         <div className="grid gap-10 border-b border-rule pb-12 sm:grid-cols-3">
           {COLS.map((col) => (
             <nav key={col.title} aria-label={col.title}>

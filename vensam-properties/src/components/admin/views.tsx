@@ -39,10 +39,10 @@ function statusPillTone(s: EnquiryStatus): "blue" | "brass" | "green" {
 function formatPortfolio(v: number): string {
   if (!v) return "0";
   const trim = (n: number) => (Math.round(n * 10) / 10).toFixed(1).replace(/\.0$/, "");
-  if (v >= 1e12) return `$${trim(v / 1e12)}T`;
-  if (v >= 1e9) return `$${trim(v / 1e9)}B`;
-  if (v >= 1e6) return `$${trim(v / 1e6)}M`;
-  return `$${Math.round(v).toLocaleString("en-US")}`;
+  if (v >= 1e12) return `KSh ${trim(v / 1e12)}T`;
+  if (v >= 1e9) return `KSh ${trim(v / 1e9)}B`;
+  if (v >= 1e6) return `KSh ${trim(v / 1e6)}M`;
+  return `KSh ${Math.round(v).toLocaleString("en-US")}`;
 }
 
 /* --------------------------------------------------------------- dashboard */

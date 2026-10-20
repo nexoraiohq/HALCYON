@@ -6,11 +6,9 @@ import { Chevron } from "@/components/ui";
 import FavoriteButton from "@/components/favorite-button";
 import PropertyStatusBadge from "@/components/property-status-badge";
 import type { Property } from "@/lib/data";
+import { formatPrice } from "@/lib/format";
 
-export const formatPrice = (n: number) =>
-  n >= 1_000_000
-    ? `$${(n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1)}M`
-    : `$${n.toLocaleString()}`;
+export { formatPrice };
 
 export default function PropertyCard({
   property,

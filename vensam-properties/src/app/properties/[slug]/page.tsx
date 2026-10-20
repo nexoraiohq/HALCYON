@@ -5,7 +5,11 @@ import { notFound } from "next/navigation";
 import { Container, Eyebrow, TextLink } from "@/components/ui";
 import PropertyCard from "@/components/property-card";
 import FavoriteButton from "@/components/favorite-button";
-import PropertyStatusBadge from "@/components/property-status-badge";
+import PropertyGallery from "@/components/property-gallery";
+import PropertyActions from "@/components/property-actions";
+import PropertyEnquiry from "@/components/property-enquiry";
+import { AGENCY_PHONE } from "@/lib/data";
+import { formatPrice } from "@/lib/format";
 import { getAgents, getProperties } from "@/lib/server-api";
 
 export const revalidate = 60;
@@ -41,37 +45,71 @@ export default async function PropertyPage({ params }: Params) {
   if (!p) notFound();
 
   const agentList = await getAgents();
-  const agent = agentList.find((a) => a.slug === p.agent);
-  const others = all.filter((x) => x.slug !== p.slug).slice(0, 3);
-  const price = p.price >= 1_000_000 ? `$${(p.price / 1_000_000).toFixed(1)}M` : `$${p.price}`;
+  const agent = p.agent ? agentList.find((a) => a.slug === p.agent) : undefined;
+  const images = Array.from(new Set([p.image, ...(p.gallery ?? [])].filter(Boolean)));
+  const refId = p.slug.toUpperCase();
+  const url = `https://www.vensamproperties.estate/properties/${p.slug}`;
+  const isRent = p.status === "For Rent";
+  const availability = p.sold ? "Sold" : isRent ? "Available to let" : "Available for sale";
+  const waHref = `https://wa.me/${AGENCY_PHONE.whatsapp}?text=${encodeURIComponent(
+    `Hello Vensam Properties, I would like to know more about "${p.title}" (Ref ${refId}). ${url}`,
+  )}`;
+
+  const available = all.filter((x) => x.slug !== p.slug && !x.sold);
+  const sameRegion = available.filter((x) => x.region === p.region);
+  const others = [...sameRegion, ...available.filter((x) => x.region !== p.region)].slice(0, 3);
+
+  const specs: { k: string; v: string }[] = [];
+  if (p.beds > 0) specs.push({ k: "Bedrooms", v: String(p.beds) });
+  if (p.baths > 0) specs.push({ k: "Bathrooms", v: String(p.baths) });
+  if (p.area > 0) specs.push({ k: "Property size", v: `${p.area.toLocaleString()} sq ft` });
+  if (p.lot) specs.push({ k: "Land size", v: p.lot });
+  if (p.parking && p.parking > 0)
+    specs.push({ k: "Parking", v: `${p.parking} ${p.parking === 1 ? "space" : "spaces"}` });
+
+  const details: [string, string][] = [
+    ["Property type", p.type],
+    ...(p.furnishing ? ([["Furnishing", p.furnishing]] as [string, string][]) : []),
+    ...(p.condition ? ([["Condition", p.condition]] as [string, string][]) : []),
+    ...(p.floor ? ([["Floor", p.floor]] as [string, string][]) : []),
+    ...(p.tenure ? ([["Tenure", p.tenure]] as [string, string][]) : []),
+    ["Availability", availability],
+    ...(isRent ? ([["Rental terms", `${formatPrice(p.price)} per month`]] as [string, string][]) : []),
+    ...(p.year ? ([["Year built", String(p.year)]] as [string, string][]) : []),
+    ...(p.lot ? ([["Land size", p.lot]] as [string, string][]) : []),
+    ["Region", p.region],
+    ["Reference", refId],
+  ];
+  const missingParticulars = !p.furnishing || !p.condition || !p.floor || !p.tenure;
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Residence",
     name: p.title,
-    url: `https://www.vensamproperties.estate/properties/${p.slug}`,
+    url,
     description: p.blurb,
     image: p.image,
     dateBuilt: p.year ? String(p.year) : undefined,
-    floorSize: { "@type": "QuantitativeValue", value: p.area, unitCode: "FTK" },
-    numberOfBedrooms: p.beds,
-    numberOfBathroomsTotal: p.baths,
+    floorSize: p.area > 0 ? { "@type": "QuantitativeValue", value: p.area, unitCode: "FTK" } : undefined,
+    numberOfBedrooms: p.beds > 0 ? p.beds : undefined,
+    numberOfBathroomsTotal: p.baths > 0 ? p.baths : undefined,
     address: {
       "@type": "PostalAddress",
       addressLocality: p.location,
       addressRegion: p.region,
-      addressCountry: "GB",
+      addressCountry: "KE",
     },
     offers: {
       "@type": "Offer",
       price: p.price,
-      priceCurrency: "USD",
+      priceCurrency: "KES",
       availability: p.sold ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
     },
     broker: {
       "@type": "RealEstateAgent",
       name: "Vensam Properties",
       url: "https://www.vensamproperties.estate",
+      telephone: `+${AGENCY_PHONE.tel.replace("+", "")}`,
     },
   };
 
@@ -82,89 +120,100 @@ export default async function PropertyPage({ params }: Params) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      {/* ── Breadcrumb + gallery ─────────────────────────────────── */}
       <section className="bg-paper pt-24 sm:pt-28">
         <Container>
           <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 py-5 text-[0.82rem] text-slate">
+            <Link href="/" className="transition-colors hover:text-ink">
+              Home
+            </Link>
+            <span aria-hidden className="text-fog">
+              /
+            </span>
             <Link href="/properties" className="transition-colors hover:text-ink">
               Residences
             </Link>
-            <span aria-hidden className="text-fog">/</span>
-            <span className="text-ink">{p.title}</span>
+            <span aria-hidden className="text-fog">
+              /
+            </span>
+            <span aria-current="page" className="truncate text-ink">
+              {p.title}
+            </span>
           </nav>
 
-          <div className="grid gap-3 pb-3 sm:grid-cols-12">
-            <div className="frame relative aspect-[16/10] w-full rounded-card sm:col-span-8 sm:aspect-auto sm:h-[62vh]">
-              <Img
-                src={p.gallery[0] || p.image}
-                alt={`${p.title} — principal view`}
-                fill
-                sizes="(max-width: 640px) 100vw, 66vw"
-                priority
-                fetchPriority="high"
-                className="object-cover"
-              />
-              <PropertyStatusBadge status={p.status} sold={p.sold} className="absolute left-5 top-5" />
-              <FavoriteButton slug={p.slug} className="absolute bottom-5 right-5" />
-            </div>
-            <div className="hidden gap-3 sm:col-span-4 sm:grid sm:grid-rows-2">
-              {p.gallery.slice(1, 3).map((g, i) => (
-                <div key={g} className="frame relative h-full w-full rounded-card">
-                  <Img
-                    src={g}
-                    alt={`${p.title} — interior ${i + 1}`}
-                    fill
-                    sizes="(max-width: 640px) 100vw, 33vw"
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+          <PropertyGallery
+            images={images}
+            title={p.title}
+            location={p.location}
+            status={p.status}
+            sold={p.sold}
+          />
         </Container>
       </section>
 
-      <section className="bg-paper py-16 sm:py-20 lg:py-24">
+      {/* ── Main content + contact rail ──────────────────────────── */}
+      <section className="bg-paper py-14 sm:py-16 lg:py-20">
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-7">
+              {/* Summary */}
               <p className="reveal eyebrow text-brass">
                 {p.type} ·{" "}
                 {p.sold ? <span className="text-red-600">Sold</span> : p.status}
               </p>
-              <h1 className="reveal display mt-5 text-display" style={{ ["--reveal-delay" as string]: "70ms" }}>
+              <h1 className="reveal display mt-4 text-display" style={{ ["--reveal-delay" as string]: "70ms" }}>
                 {p.title}
               </h1>
-              <p className="reveal mt-4 text-[1.05rem] text-slate" style={{ ["--reveal-delay" as string]: "120ms" }}>
-                {p.location}
+              <p className="reveal mt-3 text-[1.05rem] text-slate" style={{ ["--reveal-delay" as string]: "120ms" }}>
+                {p.location} · {p.region}
               </p>
 
-              <dl
-                className="reveal mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-card bg-rule sm:grid-cols-4"
-                style={{ ["--reveal-delay" as string]: "170ms" }}
-              >
-                {[
-                  { k: "Bedrooms", v: String(p.beds) },
-                  { k: "Bathrooms", v: String(p.baths) },
-                  { k: "Interior", v: `${p.area.toLocaleString()} sq ft` },
-                  { k: "Status", v: p.sold ? "Sold" : p.status, red: Boolean(p.sold) },
-                ].map((s) => (
-                  <div key={s.k} className="bg-mist px-5 py-5">
-                    <dt className="text-[0.8rem] text-slate">{s.k}</dt>
-                    <dd
-                      className={`num mt-2.5 text-[1.15rem] font-semibold tracking-[-0.02em] ${
-                        s.red ? "text-red-600" : ""
-                      }`}
-                    >
-                      {s.v}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+              <div className="mt-7 flex flex-wrap items-end justify-between gap-x-8 gap-y-4 border-b border-rule pb-7">
+                <div>
+                  <p className="text-[0.82rem] text-slate">{isRent ? "Rent" : "Guide price"}</p>
+                  <p className="num mt-1.5 text-[clamp(1.9rem,4vw,2.5rem)] font-semibold leading-none tracking-[-0.03em]">
+                    {formatPrice(p.price)}
+                    {isRent && <span className="text-[0.95rem] font-medium tracking-[-0.01em] text-slate"> / month</span>}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[0.82rem] text-slate">Reference</p>
+                  <p className="num mt-1.5 text-[0.95rem] font-medium">{refId}</p>
+                </div>
+              </div>
 
+              <p
+                className={`mt-4 flex items-center gap-2 text-[0.9rem] font-medium ${
+                  p.sold ? "text-red-600" : "text-signal"
+                }`}
+              >
+                <span aria-hidden className="size-1.5 rounded-full bg-current" />
+                {availability}
+              </p>
+
+              {/* Key specifications */}
+              <div className="reveal mt-12" style={{ ["--reveal-delay" as string]: "170ms" }}>
+                <Eyebrow>Key specifications</Eyebrow>
+                {specs.length > 0 ? (
+                  <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-card bg-rule sm:grid-cols-3">
+                    {specs.map((s) => (
+                      <div key={s.k} className="bg-mist px-5 py-5">
+                        <dt className="text-[0.8rem] text-slate">{s.k}</dt>
+                        <dd className="num mt-2.5 text-[1.15rem] font-semibold tracking-[-0.02em]">{s.v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : (
+                  <p className="mt-6 rounded-card border border-dashed border-rule bg-mist px-5 py-6 text-[0.9rem] text-slate">
+                    Specifications are shared with the full particulars — enquire below or call{" "}
+                    <span className="num">{AGENCY_PHONE.display}</span>.
+                  </p>
+                )}
+              </div>
+
+              {/* Description */}
               <div className="reveal mt-12 space-y-5" style={{ ["--reveal-delay" as string]: "220ms" }}>
-                <p className="text-[1.15rem] leading-relaxed tracking-[-0.012em] text-ink">
-                  {p.blurb}
-                </p>
+                <p className="text-[1.15rem] leading-relaxed tracking-[-0.012em] text-ink">{p.blurb}</p>
                 {p.description.map((para) => (
                   <p key={para.slice(0, 24)} className="text-[1rem] leading-relaxed text-slate">
                     {para}
@@ -172,81 +221,154 @@ export default async function PropertyPage({ params }: Params) {
                 ))}
               </div>
 
-              <div className="reveal mt-14" style={{ ["--reveal-delay" as string]: "260ms" }}>
-                <Eyebrow className="text-brass">Particulars</Eyebrow>
-                <ul className="mt-6 grid gap-px overflow-hidden rounded-card bg-rule sm:grid-cols-2">
-                  {p.features.map((f) => (
-                    <li key={f} className="bg-mist px-5 py-4 text-[0.9rem] text-slate">
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <aside className="lg:col-span-5">
-              <div className="card sticky top-24 p-7 sm:p-8">
-                <div className="flex items-baseline justify-between gap-4 border-b border-rule pb-6">
-                  <div>
-                    <p className="text-[0.82rem] text-slate">{p.status === "For Rent" ? "Guide — monthly" : "Guide"}</p>
-                    <p className="num mt-2 text-[2.4rem] font-semibold leading-none tracking-[-0.03em]">
-                      {price}
-                      {p.status === "For Rent" && (
-                        <span className="text-[1rem] font-medium tracking-[-0.01em] text-slate"> /mo</span>
-                      )}
-                    </p>
-                  </div>
-                  <p className={`eyebrow ${p.sold ? "text-red-600" : "text-brass"}`}>{p.sold ? "Sold" : p.status}</p>
+              {/* Features & amenities */}
+              {p.features.length > 0 && (
+                <div className="reveal mt-14" style={{ ["--reveal-delay" as string]: "260ms" }}>
+                  <Eyebrow className="text-brass">Features &amp; amenities</Eyebrow>
+                  <ul className="mt-6 grid gap-px overflow-hidden rounded-card bg-rule sm:grid-cols-2">
+                    {p.features.map((f) => (
+                      <li key={f} className="bg-mist px-5 py-4 text-[0.9rem] text-slate">
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+              )}
 
-                <dl className="mt-6 space-y-3 text-[0.88rem]">
-                  {[
-                    ...(p.year ? [["Built", String(p.year)]] : []),
-                    ...(p.lot ? [["Land", p.lot]] : []),
-                    ["Type", p.type],
-                    ["Region", p.region],
-                  ].map(([k, v]) => (
-                    <div key={k} className="flex items-center justify-between gap-4">
+              {/* Property details */}
+              <div className="reveal mt-14">
+                <Eyebrow className="text-brass">Property details</Eyebrow>
+                <dl className="mt-6 grid gap-px overflow-hidden rounded-card bg-rule sm:grid-cols-2">
+                  {details
+                    .filter(([, v]) => Boolean(v))
+                    .map(([k, v]) => (
+                    <div key={k} className="flex items-center justify-between gap-4 bg-mist px-5 py-4 text-[0.88rem]">
                       <dt className="text-slate">{k}</dt>
-                      <dd className="num text-ink">{v}</dd>
+                      <dd className={`num text-right text-ink ${k === "Availability" && p.sold ? "text-red-600" : ""}`}>
+                        {v}
+                      </dd>
                     </div>
                   ))}
                 </dl>
+                {missingParticulars && (
+                  <p className="mt-4 text-[0.82rem] leading-relaxed text-fog">
+                    Furnishing, floor, condition and tenure are shown where provided — the full
+                    particulars are shared on request.
+                  </p>
+                )}
+              </div>
 
-                {agent && (
-                  <div className="mt-7 flex items-center gap-4 border-t border-rule pt-6">
-                    <div className="frame relative size-12 shrink-0 rounded-full">
-                      <Img src={agent.image} alt={agent.name} fill sizes="48px" className="object-cover" />
+              {/* Location */}
+              <div className="reveal mt-14">
+                <Eyebrow className="text-brass">Location</Eyebrow>
+                <p className="mt-5 text-[1.05rem] text-ink">
+                  {p.location}
+                  {p.region && ` · ${p.region}`}
+                </p>
+                <p className="mt-4 rounded-card border border-dashed border-rule bg-mist px-5 py-5 text-[0.9rem] leading-relaxed text-slate">
+                  A map with the exact pin — and any nearby landmarks we can verify — is provided
+                  when your viewing is arranged. Nothing on this page is estimated.
+                </p>
+              </div>
+
+              {/* Agent & agency */}
+              <div className="reveal mt-14">
+                <Eyebrow className="text-brass">Agent &amp; contact</Eyebrow>
+                {agent ? (
+                  <div className="mt-6 flex items-center gap-4">
+                    <div className="frame relative size-14 shrink-0 rounded-full">
+                      <Img src={agent.image} alt={agent.name} fill sizes="56px" className="object-cover" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[0.95rem] font-medium">{agent.name}</p>
-                      <p className="mt-0.5 truncate text-[0.82rem] text-slate">{agent.role}</p>
+                      <p className="text-[1rem] font-medium">{agent.name}</p>
+                      <p className="mt-0.5 truncate text-[0.85rem] text-slate">{agent.role}</p>
+                      {agent.email && (
+                        <a
+                          href={`mailto:${agent.email}`}
+                          className="mt-1 block truncate text-[0.85rem] text-signal transition-opacity hover:opacity-70"
+                        >
+                          {agent.email}
+                        </a>
+                      )}
                     </div>
                   </div>
+                ) : (
+                  <p className="mt-5 text-[0.92rem] leading-relaxed text-slate">
+                    Enquiries are handled by the Vensam Properties desk.
+                  </p>
                 )}
+                <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-card border border-rule bg-mist px-5 py-4 text-[0.9rem]">
+                  <span className="font-medium text-ink">Vensam Properties</span>
+                  <a href={`tel:${AGENCY_PHONE.tel}`} className="num text-signal transition-opacity hover:opacity-70">
+                    {AGENCY_PHONE.display}
+                  </a>
+                  <a href={waHref} target="_blank" rel="noreferrer" className="text-signal transition-opacity hover:opacity-70">
+                    WhatsApp
+                  </a>
+                </div>
+              </div>
+            </div>
 
-                <Link href="/contact" className="btn btn-solid mt-7 w-full">
-                  Arrange a private viewing
-                </Link>
-                <a href="tel:+442079460100" className="btn btn-quiet mt-3 w-full">
-                  Call +44 20 7946 0100
-                </a>
-                <p className="mt-5 text-center text-[0.78rem] leading-relaxed text-fog">
-                  Viewings are accompanied and by appointment only.
-                </p>
+            {/* Contact / enquiry rail */}
+            <aside className="lg:col-span-5" aria-label="Contact and enquiry">
+              <div className="space-y-6">
+                <div className="card lg:sticky lg:top-24 lg:p-7">
+                  <div className="flex items-end justify-between gap-4 border-b border-rule pb-5">
+                    <div>
+                      <p className={`eyebrow ${p.sold ? "text-red-600" : "text-brass"}`}>
+                        {p.sold ? "Sold" : p.status}
+                      </p>
+                      <p className="num mt-2 text-[1.6rem] font-semibold leading-none tracking-[-0.03em]">
+                        {formatPrice(p.price)}
+                        {isRent && <span className="text-[0.85rem] font-medium text-slate"> /mo</span>}
+                      </p>
+                    </div>
+                    <p className="num pb-1 text-right text-[0.78rem] text-slate">
+                      Ref
+                      <br />
+                      {refId}
+                    </p>
+                  </div>
+
+                  {agent && (
+                    <div className="flex items-center gap-3 border-b border-rule py-4">
+                      <div className="frame relative size-10 shrink-0 rounded-full">
+                        <Img src={agent.image} alt={agent.name} fill sizes="40px" className="object-cover" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-[0.9rem] font-medium">{agent.name}</p>
+                        <p className="truncate text-[0.78rem] text-slate">{agent.role}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-5">
+                    <PropertyActions variant="rail" title={p.title} refId={refId} url={url} />
+                  </div>
+
+                  <div className="mt-5 flex items-center justify-between gap-3 border-t border-rule pt-4 text-[0.8rem] text-slate">
+                    <span className="num">{AGENCY_PHONE.display}</span>
+                    <FavoriteButton slug={p.slug} className="relative -m-2" />
+                  </div>
+                </div>
+
+                <div id="enquiry" className="card p-6 sm:p-7">
+                  <PropertyEnquiry propertyTitle={p.title} refId={refId} />
+                </div>
               </div>
             </aside>
           </div>
         </Container>
       </section>
 
+      {/* ── Similar properties ────────────────────────────────────── */}
       {others.length > 0 && (
         <section className="border-t border-rule bg-mist py-20 sm:py-24 lg:py-32">
           <Container>
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div>
                 <Eyebrow index="01" className="reveal text-fog">
-                  Also on file
+                  Similar properties
                 </Eyebrow>
                 <h2 className="reveal display mt-5 text-headline" style={{ ["--reveal-delay" as string]: "60ms" }}>
                   Others you may consider.
@@ -267,6 +389,9 @@ export default async function PropertyPage({ params }: Params) {
           </Container>
         </section>
       )}
+
+      {/* ── Mobile contact bar ────────────────────────────────────── */}
+      <PropertyActions variant="bar" title={p.title} refId={refId} url={url} />
     </>
   );
 }

@@ -33,7 +33,7 @@ export default async function PropertiesPage() {
         offers: {
           "@type": "Offer",
           price: p.price,
-          priceCurrency: "USD",
+          priceCurrency: "KES",
           availability: p.sold ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
         },
       },

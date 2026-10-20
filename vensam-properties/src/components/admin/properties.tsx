@@ -237,6 +237,15 @@ export function PropertyForm() {
   const [gallery, setGallery] = useState<string[]>(orig?.gallery ?? []);
   const [description, setDescription] = useState(orig?.description.join("\n\n") ?? "");
   const [features, setFeatures] = useState(orig?.features.join("\n") ?? "");
+  const [parking, setParking] = useState(orig?.parking ? String(orig.parking) : "");
+  const [floor, setFloor] = useState(orig?.floor ?? "");
+  const [furnishing, setFurnishing] = useState<NonNullable<Property["furnishing"]> | "">(
+    orig?.furnishing ?? "",
+  );
+  const [condition, setCondition] = useState<NonNullable<Property["condition"]> | "">(
+    orig?.condition ?? "",
+  );
+  const [tenure, setTenure] = useState<NonNullable<Property["tenure"]> | "">(orig?.tenure ?? "");
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -259,7 +268,7 @@ export function PropertyForm() {
       return;
     }
     if (!Number.isFinite(priceNum) || priceNum <= 0) {
-      setError("Guide price must be a positive number (USD).");
+      setError("Guide price must be a positive number (KSh).");
       return;
     }
     if (!image.trim()) {
@@ -301,6 +310,11 @@ export function PropertyForm() {
         .filter(Boolean),
       featured,
       sold,
+      parking: Number(parking) > 0 ? Math.round(Number(parking)) : null,
+      floor: floor.trim() || null,
+      furnishing: furnishing || null,
+      condition: condition || null,
+      tenure: tenure || null,
       agent: orig?.agent ?? "",
     };
 
@@ -342,7 +356,7 @@ export function PropertyForm() {
           <Field label="Type" hint='e.g. "Contemporary Estate"'>
             <input className={inputCls} value={type} onChange={(e) => setType(e.target.value)} />
           </Field>
-          <Field label="Guide price (USD)" required>
+          <Field label="Guide price (KSh)" required>
             <input
               type="number"
               min={1}
@@ -368,6 +382,53 @@ export function PropertyForm() {
           <Field label="Interior (sq ft)">
             <input type="number" min={0} className={`${inputCls} num`} value={area} onChange={(e) => setArea(e.target.value)} />
           </Field>
+        </div>
+
+        <div className="rounded-card border border-rule bg-paper p-5">
+          <p className="eyebrow text-fog">Particulars — optional</p>
+          <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <Field label="Parking spaces">
+              <input
+                type="number"
+                min={0}
+                className={`${inputCls} num`}
+                value={parking}
+                onChange={(e) => setParking(e.target.value)}
+                placeholder="—"
+              />
+            </Field>
+            <Field label="Floor" hint='e.g. "Ground", "3rd"'>
+              <input className={inputCls} value={floor} onChange={(e) => setFloor(e.target.value)} placeholder="—" />
+            </Field>
+            <Field label="Furnishing">
+              <select className={inputCls} value={furnishing} onChange={(e) => setFurnishing(e.target.value as typeof furnishing)}>
+                <option value="">— not set —</option>
+                <option>Furnished</option>
+                <option>Semi-furnished</option>
+                <option>Unfurnished</option>
+              </select>
+            </Field>
+            <Field label="Condition">
+              <select className={inputCls} value={condition} onChange={(e) => setCondition(e.target.value as typeof condition)}>
+                <option value="">— not set —</option>
+                <option>New</option>
+                <option>Excellent</option>
+                <option>Good</option>
+                <option>Fair</option>
+                <option>Development opportunity</option>
+              </select>
+            </Field>
+            <Field label="Tenure">
+              <select className={inputCls} value={tenure} onChange={(e) => setTenure(e.target.value as typeof tenure)}>
+                <option value="">— not set —</option>
+                <option>Freehold</option>
+                <option>Leasehold</option>
+              </select>
+            </Field>
+          </div>
+          <p className="mt-3 text-[0.78rem] leading-relaxed text-fog">
+            Each item appears on the property page only when filled — leave blank to hide it.
+          </p>
         </div>
 
         <label className="flex cursor-pointer items-center gap-3 rounded-card border border-rule bg-mist px-4 py-3.5">

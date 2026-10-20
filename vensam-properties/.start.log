@@ -1,9 +1,0 @@
-
-> vensam-properties@1.0.0 start
-> next start
-
-▲ Next.js 16.4.1
-- Local:         http://localhost:3000
-- Network:       http://192.168.100.16:3000
-✓ Ready in 799ms
-✓ Running next.config.ts took 170ms

@@ -9,4 +9,5 @@ next-env.d.ts
 npm-debug.log*
 dev.log
 .start.log
+start.log
 .env

@@ -10,4 +10,5 @@ npm-debug.log*
 dev.log
 .start.log
 start.log
-.env
+.env*
+.vercel

@@ -954,13 +954,25 @@ export function ImageField({
     }
   }
 
+  const stored = value.startsWith("data:image");
+
   return (
-    <Field label={label} hint="URL of an existing image, or upload a file once the backend is live">
+    <Field
+      label={label}
+      hint={
+        stored
+          ? "Uploaded image — stored directly in Firestore."
+          : "URL of an existing image, or upload a file (stored in Firestore, compressed)."
+      }
+    >
       <div className="flex flex-wrap items-center gap-3">
         <input
           className={`${inputCls} num flex-1`}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
+          value={stored ? "Uploaded image — stored in Firestore" : value}
+          readOnly={stored}
+          onChange={(e) => {
+            if (!stored) onChange(e.target.value);
+          }}
           placeholder="/media/p1.jpg or https://…"
         />
         <label className="btn btn-quiet inline-flex cursor-pointer items-center gap-2 px-4 py-2.5 text-[0.82rem]">
@@ -978,6 +990,15 @@ export function ImageField({
           />
         </label>
         {value && <Thumb src={value} alt="" className="h-12 w-16 border border-rule" />}
+        {stored && (
+          <button
+            type="button"
+            className="btn btn-quiet px-3 py-2.5 text-[0.82rem]"
+            onClick={() => onChange("")}
+          >
+            Use URL instead
+          </button>
+        )}
       </div>
       {error && <p className="mt-2 text-[0.78rem] text-red-700">{error}</p>}
     </Field>

@@ -29,6 +29,7 @@ import {
   type Firestore,
 } from "firebase/firestore";
 import { adminAuth, adminDb, firebaseAuth, firebaseConfigured, firebaseDb, firebaseProjectId } from "./firebase";
+import { compressToDataUrl } from "./image-compress";
 import type { AdminUser, Agent, AuthResponse, Enquiry, EnquiryInput, HealthResponse, JournalPost, Property, UploadResponse } from "./api-types";
 
 export const apiConfigured = firebaseConfigured;
@@ -167,6 +168,19 @@ async function assertNotAdminOnPublic(user: { uid: string }): Promise<void> {
 }
 
 type EnquiryRow = Omit<Enquiry, "createdAt"> & { createdAt?: unknown };
+
+/** Firestore documents are hard-capped at 1 MB — fail with a clear message. */
+const DOC_LIMIT = 950_000;
+function assertDocFits(label: string, data: unknown): void {
+  const size = JSON.stringify(data)?.length ?? 0;
+  if (size > DOC_LIMIT) {
+    throw new ApiError(
+      `${label} would store ${Math.round(size / 1000)} KB — Firestore holds up to 1 MB per document. Remove some uploaded images or use image URLs instead.`,
+      413,
+      "payload_too_large",
+    );
+  }
+}
 
 function enquiryFromDoc(id: string, data: EnquiryRow): Enquiry {
   const raw = data.createdAt;
@@ -353,6 +367,7 @@ export const api = {
 
   async createProperty(input: Property): Promise<Property> {
     requireConfigured();
+    assertDocFits("This residence", input);
     await setDoc(doc(adminDb(), "properties", input.slug), input);
     pingRevalidate();
     return input;
@@ -360,6 +375,7 @@ export const api = {
 
   async updateProperty(slug: string, patch: Partial<Property>): Promise<Property> {
     requireConfigured();
+    assertDocFits("This residence", patch);
     await updateDoc(doc(adminDb(), "properties", slug), patch as Record<string, unknown>);
     pingRevalidate();
     const snap = await getDoc(doc(adminDb(), "properties", slug));
@@ -463,7 +479,8 @@ export const api = {
   },
 
   async upload(file: File): Promise<UploadResponse> {
-    void file;
-    throw new Error("Image uploads need Firebase Storage — paste an image URL for now.");
+    requireConfigured();
+    const url = await compressToDataUrl(file);
+    return { url };
   },
 };

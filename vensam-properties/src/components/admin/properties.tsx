@@ -400,8 +400,13 @@ export function PropertyForm() {
               <div key={i} className="flex items-center gap-2.5">
                 <input
                   className={`${inputCls} num flex-1`}
-                  value={g}
-                  onChange={(e) => setGallery(gallery.map((x, xi) => (xi === i ? e.target.value : x)))}
+                  value={g.startsWith("data:image") ? "Uploaded image — stored in Firestore" : g}
+                  readOnly={g.startsWith("data:image")}
+                  onChange={(e) => {
+                    if (!g.startsWith("data:image")) {
+                      setGallery(gallery.map((x, xi) => (xi === i ? e.target.value : x)));
+                    }
+                  }}
                   placeholder="/media/p6.jpg"
                 />
                 {g && <Thumb src={g} alt="" className="hidden h-10 w-14 border border-rule sm:block" />}

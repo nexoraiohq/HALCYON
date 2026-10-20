@@ -79,13 +79,23 @@ function requireConfigured(): void {
 
 function pingRevalidate(): void {
   if (typeof window === "undefined") return;
-  const secret = process.env.NEXT_PUBLIC_REVALIDATE_SECRET;
-  if (!secret) return;
-  void fetch("/api/revalidate", {
-    method: "POST",
-    headers: { "x-revalidate-secret": secret },
-    cache: "no-store",
-  }).catch(() => undefined);
+  // Prove we're a signed-in admin by sending the Firebase ID token — the
+  // server verifies it against the admins/{uid} membership doc. (The old
+  // NEXT_PUBLIC secret was readable by every visitor in the JS bundle.)
+  void (async () => {
+    try {
+      const u = adminAuth().currentUser;
+      if (!u) return;
+      const token = await u.getIdToken();
+      await fetch("/api/revalidate", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      });
+    } catch {
+      /* revalidation is best-effort */
+    }
+  })();
 }
 
 function authErrorMessage(err: unknown): string {

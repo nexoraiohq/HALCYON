@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Container } from "@/components/ui";
 import PropertyCard from "@/components/property-card";
+import { PROPERTY_STATUSES, type PropertyStatus } from "@/lib/api-types";
 import type { Property } from "@/lib/data";
 
 const SORTS = ["Featured", "Price · low to high", "Price · high to low"] as const;
@@ -10,6 +11,10 @@ type Sort = (typeof SORTS)[number];
 
 function readRegionParam(): string | null {
   return new URLSearchParams(window.location.search).get("region");
+}
+
+function readStatusParam(): string | null {
+  return new URLSearchParams(window.location.search).get("status");
 }
 
 export default function PropertyBrowser({
@@ -33,17 +38,27 @@ export default function PropertyBrowser({
     () => null,
   );
   const region = tabRegion ?? (urlRegion && regions.includes(urlRegion) ? urlRegion : regions[0]);
+  const [tabStatus, setTabStatus] = useState<string | null>(null);
+  const urlStatus = useSyncExternalStore(
+    (onStoreChange) => {
+      window.addEventListener("popstate", onStoreChange);
+      return () => window.removeEventListener("popstate", onStoreChange);
+    },
+    readStatusParam,
+    () => null,
+  );
+  const status = tabStatus ?? (urlStatus && PROPERTY_STATUSES.includes(urlStatus as PropertyStatus) ? urlStatus : null);
   const [sort, setSort] = useState<Sort>(SORTS[0]);
   const gridRef = useRef<HTMLUListElement>(null);
   const mounted = useRef(false);
 
   const list = useMemo(() => {
-    const filtered =
-      region === "All regions" ? properties : properties.filter((p) => p.region === region);
+    let filtered = region === "All regions" ? properties : properties.filter((p) => p.region === region);
+    if (status) filtered = filtered.filter((p) => p.status === status);
     if (sort === "Price · low to high") return [...filtered].sort((a, b) => a.price - b.price);
     if (sort === "Price · high to low") return [...filtered].sort((a, b) => b.price - a.price);
     return filtered;
-  }, [properties, region, sort]);
+  }, [properties, region, status, sort]);
 
   // Cards mounted by a filter change arrive without `is-in`; animate them in.
   // First paint is left to RevealObserver so the initial stagger is preserved.
@@ -55,7 +70,7 @@ export default function PropertyBrowser({
     gridRef.current
       ?.querySelectorAll<HTMLElement>(".reveal:not(.is-in)")
       .forEach((n) => n.classList.add("is-in"));
-  }, [region, sort]);
+  }, [region, status, sort]);
 
   const tabBase =
     "shrink-0 border-b-2 px-4 py-4 text-[0.82rem] tracking-[-0.006em] transition-colors duration-300";
@@ -80,6 +95,17 @@ export default function PropertyBrowser({
                 {r}
               </button>
             ))}
+            {status && (
+              <button
+                type="button"
+                aria-label={`Clear status filter — ${status}`}
+                onClick={() => setTabStatus(null)}
+                className="my-2 ml-1 mr-2 flex shrink-0 items-center gap-1.5 rounded-pill bg-ink px-3.5 py-1.5 text-[0.78rem] text-white transition-opacity hover:opacity-80"
+              >
+                {status}
+                <span aria-hidden className="text-[0.9rem] leading-none">×</span>
+              </button>
+            )}
             <span className="ml-auto flex shrink-0 items-stretch">
               {SORTS.map((s) => (
                 <button

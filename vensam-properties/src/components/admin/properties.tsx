@@ -134,6 +134,11 @@ export default function PropertiesView() {
                           {icons.star(true)}
                         </span>
                       )}
+                      {p.sold && (
+                        <span className="rounded-pill bg-red-600 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-white">
+                          Sold
+                        </span>
+                      )}
                     </div>
                     <p className="mt-0.5 truncate text-[0.8rem] text-slate">
                       {p.location} · {p.region}
@@ -143,16 +148,32 @@ export default function PropertiesView() {
                 <p className="num text-[0.9rem] font-semibold tracking-[-0.01em] sm:text-right">
                   {formatPrice(p.price)}
                 </p>
-                <select
-                  aria-label={`Status of ${p.title}`}
-                  value={p.status}
-                  onChange={(e) => void saveProperty(p, { ...p, status: e.target.value as PropertyStatus })}
-                  className="w-full rounded-pill border border-rule bg-paper px-3 py-1.5 text-[0.78rem] text-ink transition-colors focus:border-ink focus:outline-none sm:w-auto"
-                >
-                  {PROPERTY_STATUSES.map((s) => (
-                    <option key={s}>{s}</option>
-                  ))}
-                </select>
+                <div className="flex flex-col gap-2">
+                  <select
+                    aria-label={`Status of ${p.title}`}
+                    value={p.status}
+                    onChange={(e) => void saveProperty(p, { ...p, status: e.target.value as PropertyStatus })}
+                    className="rounded-pill border border-rule bg-paper px-3 py-1.5 text-[0.78rem] text-ink transition-colors focus:border-ink focus:outline-none"
+                  >
+                    {PROPERTY_STATUSES.map((s) => (
+                      <option key={s}>{s}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    aria-label={p.sold ? `Undo sold for ${p.title}` : `Mark ${p.title} as sold`}
+                    aria-pressed={Boolean(p.sold)}
+                    title={p.sold ? "Mark back as available" : "Property sold — shows a red SOLD label on the site"}
+                    onClick={() => void saveProperty(p, { ...p, sold: !p.sold })}
+                    className={`rounded-pill border px-3 py-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.12em] transition-colors ${
+                      p.sold
+                        ? "border-red-600 bg-red-600 text-white"
+                        : "border-rule bg-paper text-slate hover:border-red-400 hover:text-red-600"
+                    }`}
+                  >
+                    {p.sold ? "Sold" : "Mark sold"}
+                  </button>
+                </div>
                 <button
                   type="button"
                   aria-label={p.featured ? "Remove from featured" : "Mark as featured"}
@@ -195,31 +216,25 @@ export default function PropertiesView() {
 }
 
 export function PropertyForm() {
-  const { saveProperty, upload, notify, editingProperty: orig, properties, agents, closePropertyForm: onCancel } =
+  const { saveProperty, upload, notify, editingProperty: orig, properties, closePropertyForm: onCancel } =
     useAdmin();
-  const agentOptions = agents.map((a) => ({ slug: a.slug, label: `${a.name} — ${a.role}` }));
   const existingSlugs = properties.map((p) => p.slug);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
   const [title, setTitle] = useState(orig?.title ?? "");
-  const [slug, setSlug] = useState(orig?.slug ?? "");
-  const [slugTouched, setSlugTouched] = useState(Boolean(orig));
   const [location, setLocation] = useState(orig?.location ?? "");
   const [region, setRegion] = useState(orig?.region ?? "");
   const [price, setPrice] = useState(orig ? String(orig.price) : "");
   const [beds, setBeds] = useState(String(orig?.beds ?? 3));
   const [baths, setBaths] = useState(String(orig?.baths ?? 3));
   const [area, setArea] = useState(orig ? String(orig.area) : "");
-  const [lot, setLot] = useState(orig?.lot ?? "");
   const [status, setStatus] = useState<PropertyStatus>(orig?.status ?? "For Sale");
   const [type, setType] = useState(orig?.type ?? "");
-  const [year, setYear] = useState(orig ? String(orig.year) : String(new Date().getFullYear()));
   const [featured, setFeatured] = useState(Boolean(orig?.featured));
-  const [agent, setAgent] = useState(orig?.agent ?? "");
+  const [sold, setSold] = useState(Boolean(orig?.sold));
   const [image, setImage] = useState(orig?.image ?? "");
   const [gallery, setGallery] = useState<string[]>(orig?.gallery ?? []);
-  const [blurb, setBlurb] = useState(orig?.blurb ?? "");
   const [description, setDescription] = useState(orig?.description.join("\n\n") ?? "");
   const [features, setFeatures] = useState(orig?.features.join("\n") ?? "");
 
@@ -227,13 +242,12 @@ export function PropertyForm() {
     e.preventDefault();
     setError("");
 
-    const finalSlug = slug.trim() || slugify(title);
+    const finalSlug = orig?.slug ?? slugify(title);
     const priceNum = Number(price);
     const areaNum = Number(area);
-    const yearNum = Number(year);
 
     if (!title.trim() || !finalSlug || !location.trim() || !region.trim()) {
-      setError("Title, slug, location and region are required.");
+      setError("Title, location and region are required.");
       return;
     }
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(finalSlug)) {
@@ -252,10 +266,14 @@ export function PropertyForm() {
       setError("A principal image is required.");
       return;
     }
-    if (!blurb.trim() || !description.trim()) {
-      setError("Blurb and description are required.");
+    if (!description.trim()) {
+      setError("A description is required.");
       return;
     }
+
+    const firstPara = description.split(/\n{2,}/)[0]?.trim() ?? "";
+    const blurb =
+      orig?.blurb || (firstPara.length > 180 ? `${firstPara.slice(0, 180).trimEnd()}…` : firstPara);
 
     const input: Property = {
       slug: finalSlug,
@@ -266,13 +284,13 @@ export function PropertyForm() {
       beds: Number(beds) || 0,
       baths: Number(baths) || 0,
       area: Number.isFinite(areaNum) ? areaNum : 0,
-      lot: lot.trim(),
+      lot: orig?.lot ?? "",
       status,
       type: type.trim() || "Residence",
-      year: Number.isFinite(yearNum) ? yearNum : new Date().getFullYear(),
+      year: orig?.year ?? new Date().getFullYear(),
       image: image.trim(),
       gallery: gallery.map((g) => g.trim()).filter(Boolean),
-      blurb: blurb.trim(),
+      blurb,
       description: description
         .split(/\n{2,}/)
         .map((para) => para.trim())
@@ -282,7 +300,8 @@ export function PropertyForm() {
         .map((f) => f.trim())
         .filter(Boolean),
       featured,
-      agent,
+      sold,
+      agent: orig?.agent ?? "",
     };
 
     setBusy(true);
@@ -305,24 +324,7 @@ export function PropertyForm() {
       <form onSubmit={submit} className="space-y-6">
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Title" required className="sm:col-span-2">
-            <input
-              className={inputCls}
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value);
-                if (!slugTouched) setSlug(slugify(e.target.value));
-              }}
-            />
-          </Field>
-          <Field label="Slug" required hint="Public URL identifier">
-            <input
-              className={`${inputCls} num`}
-              value={slug}
-              onChange={(e) => {
-                setSlugTouched(true);
-                setSlug(slugify(e.target.value));
-              }}
-            />
+            <input className={inputCls} value={title} onChange={(e) => setTitle(e.target.value)} />
           </Field>
           <Field label="Location" required hint='e.g. "Malibu, California"'>
             <input className={inputCls} value={location} onChange={(e) => setLocation(e.target.value)} />
@@ -330,7 +332,9 @@ export function PropertyForm() {
           <Field label="Region" required hint="Used by the region filter">
             <input className={inputCls} value={region} onChange={(e) => setRegion(e.target.value)} list="admin-regions" />
             <datalist id="admin-regions">
-              {Array.from(new Set([...(orig ? [orig.region] : []), "Pacific Coast", "Europe", "Americas", "Mediterranean", "Mountains", "Asia Pacific"])).map((r) => (
+              {Array.from(new Set([...properties.map((p) => p.region), orig?.region ?? "", region]))
+                .filter(Boolean)
+                .map((r) => (
                 <option key={r} value={r} />
               ))}
             </datalist>
@@ -364,22 +368,6 @@ export function PropertyForm() {
           <Field label="Interior (sq ft)">
             <input type="number" min={0} className={`${inputCls} num`} value={area} onChange={(e) => setArea(e.target.value)} />
           </Field>
-          <Field label="Land" hint='e.g. "1.8 acres"'>
-            <input className={inputCls} value={lot} onChange={(e) => setLot(e.target.value)} />
-          </Field>
-          <Field label="Year built">
-            <input type="number" min={0} max={2200} className={`${inputCls} num`} value={year} onChange={(e) => setYear(e.target.value)} />
-          </Field>
-          <Field label="Advisor" hint="From People">
-            <select className={inputCls} value={agent} onChange={(e) => setAgent(e.target.value)}>
-              <option value="">— none —</option>
-              {agentOptions.map((a) => (
-                <option key={a.slug} value={a.slug}>
-                  {a.label}
-                </option>
-              ))}
-            </select>
-          </Field>
         </div>
 
         <label className="flex cursor-pointer items-center gap-3 rounded-card border border-rule bg-mist px-4 py-3.5">
@@ -390,6 +378,22 @@ export function PropertyForm() {
             className="size-4 accent-[#1d1d1f]"
           />
           <span className="text-[0.88rem] text-ink">Featured — show on the home page grid</span>
+        </label>
+
+        <label
+          className={`flex cursor-pointer items-center gap-3 rounded-card border px-4 py-3.5 transition-colors ${
+            sold ? "border-red-300 bg-red-50" : "border-rule bg-mist"
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={sold}
+            onChange={(e) => setSold(e.target.checked)}
+            className="size-4 accent-[#d92d20]"
+          />
+          <span className={`text-[0.88rem] ${sold ? "font-medium text-red-700" : "text-ink"}`}>
+            Sold — the site shows a red SOLD label
+          </span>
         </label>
 
         <ImageField label="Principal image" value={image} onChange={setImage} upload={upload} notify={notify} />
@@ -449,11 +453,7 @@ export function PropertyForm() {
           </div>
         </Field>
 
-        <Field label="Blurb" required hint="One line — shown in cards and metadata">
-          <textarea rows={2} className={`${inputCls} resize-none`} value={blurb} onChange={(e) => setBlurb(e.target.value)} />
-        </Field>
-
-        <Field label="Description" required hint="Paragraphs separated by a blank line">
+        <Field label="Description" required hint="Paragraphs separated by a blank line — the first line becomes the summary">
           <textarea
             rows={7}
             className={`${inputCls} resize-y`}

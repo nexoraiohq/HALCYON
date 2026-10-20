@@ -8,12 +8,13 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Residences",
   description:
-    "Fourteen residences currently offered by Vensam Properties — from a Malibu cliffside estate to a Grade II listed Georgian townhouse in Kensington. Most are never publicly listed.",
+    "Residences currently offered by Vensam Properties — from a Malibu cliffside estate to a Grade II listed Georgian townhouse in Kensington. Most are never publicly listed.",
   alternates: { canonical: "/properties" },
 };
 
 export default async function PropertiesPage() {
   const list = await getProperties();
+  const regionCount = new Set(list.map((p) => p.region)).size;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -33,7 +34,7 @@ export default async function PropertiesPage() {
           "@type": "Offer",
           price: p.price,
           priceCurrency: "USD",
-          availability: "https://schema.org/InStock",
+          availability: p.sold ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
         },
       },
     })),
@@ -50,13 +51,13 @@ export default async function PropertiesPage() {
         eyebrow="Currently offered"
         title={
           <>
-            Fourteen houses.
+            {list.length} {list.length === 1 ? "house" : "houses"}.
             <br />
             One shortlist.
           </>
         }
         intro="Nothing here is syndicated. If a residence has a board on the lawn, it is because we advised it — and you will not find it anywhere else."
-        meta={`${list.length} residences · 6 countries`}
+        meta={`${list.length} ${list.length === 1 ? "residence" : "residences"} · ${regionCount} ${regionCount === 1 ? "region" : "regions"}`}
       />
 
       <PropertyBrowser properties={list}>

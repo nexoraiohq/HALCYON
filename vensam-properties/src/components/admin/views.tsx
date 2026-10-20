@@ -65,15 +65,13 @@ export function DashboardView() {
     return () => clearTimeout(t);
   }, []);
 
-  const byStatus = useMemo(() => {
-    const m: Record<string, number> = { "For Sale": 0, "Private Listing": 0, "Under Offer": 0 };
-    for (const p of properties) m[p.status] = (m[p.status] ?? 0) + 1;
-    return m;
-  }, [properties]);
+  const forSale = properties.filter((p) => p.status === "For Sale" && !p.sold).length;
+  const forRent = properties.filter((p) => p.status === "For Rent" && !p.sold).length;
+  const soldCount = properties.filter((p) => p.sold).length;
 
   const newCount = enquiries.filter((e) => e.status === "new").length;
   const recent = enquiries.slice(0, 5);
-  const active = properties.filter((p) => p.status !== "Under Offer");
+  const active = properties.filter((p) => !p.sold);
   const portfolioValue = active.reduce((sum, p) => sum + p.price, 0);
   const total = Math.max(properties.length, 1);
   const firstName = (user?.name ?? "there").split(" ")[0];
@@ -110,7 +108,7 @@ export function DashboardView() {
         <StatCard
           label="Residences"
           value={loading ? "…" : properties.length}
-          sub={`${byStatus["For Sale"] ?? 0} for sale · ${byStatus["Private Listing"] ?? 0} private · ${byStatus["Under Offer"] ?? 0} under offer`}
+          sub={`${forSale} for sale · ${forRent} for rent · ${soldCount} sold`}
         />
         <StatCard
           label="Portfolio value"
@@ -140,21 +138,22 @@ export function DashboardView() {
       <section className="card p-6 sm:p-7">
         <h3 className="text-[1rem] font-semibold tracking-[-0.012em]">Portfolio mix</h3>
         <div className="mt-5 space-y-4">
-          {(["For Sale", "Private Listing", "Under Offer"] as const).map((s) => {
-            const n = byStatus[s] ?? 0;
-            const pct = Math.round((n / total) * 100);
+          {([
+            { label: "For Sale", n: forSale, bar: "bg-ink" },
+            { label: "For Rent", n: forRent, bar: "bg-signal/70" },
+            { label: "Sold", n: soldCount, bar: "bg-red-600" },
+          ]).map((s) => {
+            const pct = Math.round((s.n / total) * 100);
             return (
-              <div key={s} className="flex items-center gap-4">
-                <span className="w-[9.5rem] shrink-0 text-[0.84rem] text-slate">{s}</span>
+              <div key={s.label} className="flex items-center gap-4">
+                <span className="w-[9.5rem] shrink-0 text-[0.84rem] text-slate">{s.label}</span>
                 <div className="h-2 flex-1 overflow-hidden rounded-pill bg-mist">
                   <div
-                    className={`h-full rounded-pill transition-[width] duration-500 ${
-                      s === "For Sale" ? "bg-ink" : s === "Private Listing" ? "bg-brass" : "bg-signal/70"
-                    }`}
+                    className={`h-full rounded-pill transition-[width] duration-500 ${s.bar}`}
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <span className="num w-10 text-right text-[0.84rem] text-slate">{n}</span>
+                <span className="num w-10 text-right text-[0.84rem] text-slate">{s.n}</span>
               </div>
             );
           })}

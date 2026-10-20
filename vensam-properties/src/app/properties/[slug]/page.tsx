@@ -52,7 +52,7 @@ export default async function PropertyPage({ params }: Params) {
     url: `https://www.vensamproperties.estate/properties/${p.slug}`,
     description: p.blurb,
     image: p.image,
-    dateBuilt: String(p.year),
+    dateBuilt: p.year ? String(p.year) : undefined,
     floorSize: { "@type": "QuantitativeValue", value: p.area, unitCode: "FTK" },
     numberOfBedrooms: p.beds,
     numberOfBathroomsTotal: p.baths,
@@ -66,7 +66,7 @@ export default async function PropertyPage({ params }: Params) {
       "@type": "Offer",
       price: p.price,
       priceCurrency: "USD",
-      availability: "https://schema.org/InStock",
+      availability: p.sold ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
     },
     broker: {
       "@type": "RealEstateAgent",
@@ -95,7 +95,7 @@ export default async function PropertyPage({ params }: Params) {
           <div className="grid gap-3 pb-3 sm:grid-cols-12">
             <div className="frame relative aspect-[16/10] w-full rounded-card sm:col-span-8 sm:aspect-auto sm:h-[62vh]">
               <Img
-                src={p.gallery[0]}
+                src={p.gallery[0] || p.image}
                 alt={`${p.title} — principal view`}
                 fill
                 sizes="(max-width: 640px) 100vw, 66vw"
@@ -103,7 +103,7 @@ export default async function PropertyPage({ params }: Params) {
                 fetchPriority="high"
                 className="object-cover"
               />
-              <PropertyStatusBadge status={p.status} className="absolute left-5 top-5" />
+              <PropertyStatusBadge status={p.status} sold={p.sold} className="absolute left-5 top-5" />
               <FavoriteButton slug={p.slug} className="absolute bottom-5 right-5" />
             </div>
             <div className="hidden gap-3 sm:col-span-4 sm:grid sm:grid-rows-2">
@@ -128,7 +128,8 @@ export default async function PropertyPage({ params }: Params) {
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-7">
               <p className="reveal eyebrow text-brass">
-                {p.type} · {p.status}
+                {p.type} ·{" "}
+                {p.sold ? <span className="text-red-600">Sold</span> : p.status}
               </p>
               <h1 className="reveal display mt-5 text-display" style={{ ["--reveal-delay" as string]: "70ms" }}>
                 {p.title}
@@ -145,11 +146,15 @@ export default async function PropertyPage({ params }: Params) {
                   { k: "Bedrooms", v: String(p.beds) },
                   { k: "Bathrooms", v: String(p.baths) },
                   { k: "Interior", v: `${p.area.toLocaleString()} sq ft` },
-                  { k: "Land", v: p.lot },
+                  { k: "Status", v: p.sold ? "Sold" : p.status, red: Boolean(p.sold) },
                 ].map((s) => (
                   <div key={s.k} className="bg-mist px-5 py-5">
                     <dt className="text-[0.8rem] text-slate">{s.k}</dt>
-                    <dd className="num mt-2.5 text-[1.15rem] font-semibold tracking-[-0.02em]">
+                    <dd
+                      className={`num mt-2.5 text-[1.15rem] font-semibold tracking-[-0.02em] ${
+                        s.red ? "text-red-600" : ""
+                      }`}
+                    >
                       {s.v}
                     </dd>
                   </div>
@@ -183,20 +188,23 @@ export default async function PropertyPage({ params }: Params) {
               <div className="card sticky top-24 p-7 sm:p-8">
                 <div className="flex items-baseline justify-between gap-4 border-b border-rule pb-6">
                   <div>
-                    <p className="text-[0.82rem] text-slate">Guide</p>
+                    <p className="text-[0.82rem] text-slate">{p.status === "For Rent" ? "Guide — monthly" : "Guide"}</p>
                     <p className="num mt-2 text-[2.4rem] font-semibold leading-none tracking-[-0.03em]">
                       {price}
+                      {p.status === "For Rent" && (
+                        <span className="text-[1rem] font-medium tracking-[-0.01em] text-slate"> /mo</span>
+                      )}
                     </p>
                   </div>
-                  <p className="eyebrow text-brass">{p.status}</p>
+                  <p className={`eyebrow ${p.sold ? "text-red-600" : "text-brass"}`}>{p.sold ? "Sold" : p.status}</p>
                 </div>
 
                 <dl className="mt-6 space-y-3 text-[0.88rem]">
                   {[
-                    ["Built", String(p.year)],
+                    ...(p.year ? [["Built", String(p.year)]] : []),
+                    ...(p.lot ? [["Land", p.lot]] : []),
                     ["Type", p.type],
                     ["Region", p.region],
-                    ["Reference", `HAL-${String(p.area).slice(0, 3)}${p.year}`],
                   ].map(([k, v]) => (
                     <div key={k} className="flex items-center justify-between gap-4">
                       <dt className="text-slate">{k}</dt>
@@ -232,31 +240,33 @@ export default async function PropertyPage({ params }: Params) {
         </Container>
       </section>
 
-      <section className="border-t border-rule bg-mist py-20 sm:py-24 lg:py-32">
-        <Container>
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <div>
-              <Eyebrow index="01" className="reveal text-fog">
-                Also on file
-              </Eyebrow>
-              <h2 className="reveal display mt-5 text-headline" style={{ ["--reveal-delay" as string]: "60ms" }}>
-                Others you may consider.
-              </h2>
+      {others.length > 0 && (
+        <section className="border-t border-rule bg-mist py-20 sm:py-24 lg:py-32">
+          <Container>
+            <div className="flex flex-wrap items-end justify-between gap-6">
+              <div>
+                <Eyebrow index="01" className="reveal text-fog">
+                  Also on file
+                </Eyebrow>
+                <h2 className="reveal display mt-5 text-headline" style={{ ["--reveal-delay" as string]: "60ms" }}>
+                  Others you may consider.
+                </h2>
+              </div>
+              <TextLink href="/properties">All residences</TextLink>
             </div>
-            <TextLink href="/properties">All residences</TextLink>
-          </div>
-          <div className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-            {others.map((o, i) => (
-              <PropertyCard
-                key={o.slug}
-                property={o}
-                index={i}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              />
-            ))}
-          </div>
-        </Container>
-      </section>
+            <div className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+              {others.map((o, i) => (
+                <PropertyCard
+                  key={o.slug}
+                  property={o}
+                  index={i}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
     </>
   );
 }

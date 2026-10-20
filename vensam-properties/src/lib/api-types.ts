@@ -4,7 +4,7 @@ export type { Property, Agent };
 
 export type PropertyStatus = Property["status"];
 
-export const PROPERTY_STATUSES: PropertyStatus[] = ["For Sale", "Private Listing", "Under Offer"];
+export const PROPERTY_STATUSES: PropertyStatus[] = ["For Sale", "For Rent"];
 
 export type JournalPost = {
   slug: string;

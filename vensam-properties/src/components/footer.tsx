@@ -7,7 +7,7 @@ const COLS = [
     title: "Residences",
     links: [
       { href: "/properties", label: "All residences" },
-      { href: "/properties?status=Private+Listing", label: "Private listings" },
+      { href: "/properties?status=For+Rent", label: "For rent" },
       { href: "/properties?region=Europe", label: "Europe" },
       { href: "/properties?region=Mediterranean", label: "Mediterranean" },
       { href: "/properties?region=Americas", label: "Americas" },

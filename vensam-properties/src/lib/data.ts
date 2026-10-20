@@ -8,7 +8,8 @@ export type Property = {
   baths: number;
   area: number;
   lot: string;
-  status: "For Sale" | "Private Listing" | "Under Offer";
+  status: "For Sale" | "For Rent";
+  sold?: boolean;
   type: string;
   year: number;
   image: string;
@@ -62,7 +63,7 @@ export const properties: Property[] = [
     baths: 5,
     area: 7_300,
     lot: "Garden square",
-    status: "Private Listing",
+    status: "For Rent",
     type: "Georgian Townhouse",
     year: 1843,
     image: "/media/p2.jpg",
@@ -154,7 +155,7 @@ export const properties: Property[] = [
     baths: 7,
     area: 9_600,
     lot: "3.2 acres",
-    status: "Under Offer",
+    status: "For Sale",
     type: "Mountain Modern",
     year: 2022,
     image: "/media/p5.jpg",
@@ -184,7 +185,7 @@ export const properties: Property[] = [
     baths: 4,
     area: 4_800,
     lot: "Full floor",
-    status: "Private Listing",
+    status: "For Rent",
     type: "Haussmannian Apartment",
     year: 1868,
     image: "/media/p6.jpg",
@@ -304,7 +305,7 @@ export const properties: Property[] = [
     baths: 6,
     area: 7_800,
     lot: "1,010 m²",
-    status: "Private Listing",
+    status: "For Rent",
     type: "Waterfront Modern",
     year: 2020,
     image: "/media/p10.jpg",

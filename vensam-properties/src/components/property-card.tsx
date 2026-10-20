@@ -36,7 +36,7 @@ export default function PropertyCard({
           priority={priority}
           className="object-cover"
         />
-        <PropertyStatusBadge status={property.status} className="absolute left-4 top-4" />
+        <PropertyStatusBadge status={property.status} sold={property.sold} className="absolute left-4 top-4" />
         <FavoriteButton slug={property.slug} className="absolute bottom-4 right-4" />
       </div>
 
@@ -55,6 +55,7 @@ export default function PropertyCard({
           </div>
           <p className="num shrink-0 text-[1.05rem] font-medium tracking-[-0.015em]">
             {formatPrice(property.price)}
+            {property.status === "For Rent" && <span className="text-slate"> /mo</span>}
           </p>
         </div>
 

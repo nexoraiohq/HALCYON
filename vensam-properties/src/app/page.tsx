@@ -12,18 +12,9 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Vensam Properties — Private Real Estate Advisory",
   description:
-    "Off-market acquisition, discreet sale and portfolio advisory. Fourteen residences currently offered across 41 countries — most of them never advertised.",
+    "Off-market acquisition, discreet sale and portfolio advisory. Residences currently offered across 41 countries — most of them never advertised.",
   alternates: { canonical: "/" },
 };
-
-const HERO_REGIONS = [
-  "Europe",
-  "Mediterranean",
-  "Americas",
-  "Pacific Coast",
-  "Mountains",
-  "Asia Pacific",
-];
 
 const PRESS = [
   "Architectural Digest",
@@ -39,7 +30,14 @@ const PRESS = [
 export default async function HomePage() {
   const [properties, journal] = await Promise.all([getProperties(), getJournal()]);
   const featured = properties.filter((p) => p.featured);
-  const rest = properties.slice(3, 6);
+  const showcase = featured.length > 0 ? featured : properties.slice(0, 3);
+  const showcaseSlugs = new Set(showcase.map((p) => p.slug));
+  const rest = properties.filter((p) => !showcaseSlugs.has(p.slug)).slice(0, 3);
+  const onFileHeading =
+    showcase.length >= properties.length
+      ? `${properties.length} on file.`
+      : `${showcase.length} of the ${properties.length} on file.`;
+  const heroRegions = Array.from(new Set(properties.map((p) => p.region))).filter(Boolean);
 
   return (
     <>
@@ -104,7 +102,7 @@ export default async function HomePage() {
             <span className="eyebrow shrink-0 text-fog">Where</span>
             <span className="h-6 w-px shrink-0 bg-rule" />
             <div className="no-bar flex min-w-0 flex-1 items-center overflow-x-auto">
-              {HERO_REGIONS.map((r, i) => (
+              {heroRegions.map((r, i) => (
                 <Link
                   key={r}
                   href={`/properties?region=${encodeURIComponent(r)}`}
@@ -163,34 +161,35 @@ export default async function HomePage() {
       </Section>
 
       {/* ───────────────── FEATURED RESIDENCES ───────────────── */}
-      <Section cv tone="mist" className="py-24 sm:py-32 lg:py-40">
-        <Container>
-          <div className="flex flex-wrap items-end justify-between gap-8">
-            <div>
-              <Eyebrow index="01" className="reveal text-fog">
-                Currently offered
-              </Eyebrow>
-              <h2 className="reveal display mt-5 text-headline" style={{ ["--reveal-delay" as string]: "60ms" }}>
-                Three of the fourteen
-                <br className="hidden sm:block" /> on file.
-              </h2>
+      {showcase.length > 0 && (
+        <Section cv tone="mist" className="py-24 sm:py-32 lg:py-40">
+          <Container>
+            <div className="flex flex-wrap items-end justify-between gap-8">
+              <div>
+                <Eyebrow index="01" className="reveal text-fog">
+                  Currently offered
+                </Eyebrow>
+                <h2 className="reveal display mt-5 text-headline" style={{ ["--reveal-delay" as string]: "60ms" }}>
+                  {onFileHeading}
+                </h2>
+              </div>
+              <TextLink href="/properties">View all residences</TextLink>
             </div>
-            <TextLink href="/properties">View all residences</TextLink>
-          </div>
 
-          <div className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-            {featured.map((p, i) => (
-              <PropertyCard
-                key={p.slug}
-                property={p}
-                index={i}
-                ratio="aspect-[4/5]"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              />
-            ))}
-          </div>
-        </Container>
-      </Section>
+            <div className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+              {showcase.map((p, i) => (
+                <PropertyCard
+                  key={p.slug}
+                  property={p}
+                  index={i}
+                  ratio="aspect-[4/5]"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              ))}
+            </div>
+          </Container>
+        </Section>
+      )}
 
       {/* ───────────────── CINEMATIC BAND ───────────────── */}
       <section className="relative isolate overflow-hidden bg-void">
@@ -364,36 +363,39 @@ export default async function HomePage() {
       </Section>
 
       {/* ───────────────── MORE RESIDENCES ───────────────── */}
-      <Section cv tone="paper" className="py-24 sm:py-32 lg:py-40">
-        <Container>
-          <div className="flex flex-wrap items-end justify-between gap-8">
-            <div>
-              <Eyebrow index="07" className="reveal text-fog">
-                Further afield
-              </Eyebrow>
-              <h2 className="reveal display mt-5 text-headline" style={{ ["--reveal-delay" as string]: "60ms" }}>
-                Also on file.
-              </h2>
+      {rest.length > 0 && (
+        <Section cv tone="paper" className="py-24 sm:py-32 lg:py-40">
+          <Container>
+            <div className="flex flex-wrap items-end justify-between gap-8">
+              <div>
+                <Eyebrow index="07" className="reveal text-fog">
+                  Further afield
+                </Eyebrow>
+                <h2 className="reveal display mt-5 text-headline" style={{ ["--reveal-delay" as string]: "60ms" }}>
+                  Also on file.
+                </h2>
+              </div>
+              <TextLink href="/properties">Full portfolio</TextLink>
             </div>
-            <TextLink href="/properties">Full portfolio</TextLink>
-          </div>
 
-          <div className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.map((p, i) => (
-              <PropertyCard
-                key={p.slug}
-                property={p}
-                index={i}
-                ratio="aspect-[4/3]"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              />
-            ))}
-          </div>
-        </Container>
-      </Section>
+            <div className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+              {rest.map((p, i) => (
+                <PropertyCard
+                  key={p.slug}
+                  property={p}
+                  index={i}
+                  ratio="aspect-[4/3]"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              ))}
+            </div>
+          </Container>
+        </Section>
+      )}
 
       {/* ───────────────── JOURNAL ───────────────── */}
-      <Section cv tone="mist" className="py-24 sm:py-32 lg:py-40">
+      {journal.length > 0 && (
+        <Section cv tone="mist" className="py-24 sm:py-32 lg:py-40">
         <Container>
           <div className="flex flex-wrap items-end justify-between gap-8">
             <div>
@@ -440,8 +442,9 @@ export default async function HomePage() {
               </article>
             ))}
           </div>
-        </Container>
-      </Section>
+          </Container>
+        </Section>
+      )}
 
       {/* ───────────────── CTA ───────────────── */}
       <section className="relative isolate overflow-hidden bg-void">

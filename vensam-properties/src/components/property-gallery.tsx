@@ -95,7 +95,7 @@ export default function PropertyGallery({
 
   return (
     <>
-      <div className="grid gap-3 overflow-auto sm:grid-cols-12">
+      <div className="grid gap-3 sm:grid-cols-12">
         <button
           ref={mainRef}
           type="button"
@@ -123,12 +123,14 @@ export default function PropertyGallery({
         </button>
 
         {total > 1 && (
-          <div className="no-bar flex gap-3 overflow-x-auto sm:col-span-4 sm:min-h-0 sm:flex-col sm:overflow-x-hidden sm:overflow-y-auto">
-            {images.map((src, i) => (
-              <div key={i} className="relative aspect-[3/2] w-28 shrink-0 sm:w-full">
-                {thumb(src, i, "absolute inset-0 h-full w-full")}
-              </div>
-            ))}
+          <div className="relative sm:col-span-4">
+            <div className="no-bar flex gap-3 overflow-x-auto sm:absolute sm:inset-0 sm:flex-col sm:overflow-x-hidden sm:overflow-y-auto">
+              {images.map((src, i) => (
+                <div key={i} className="relative aspect-[3/2] w-28 shrink-0 sm:w-full">
+                  {thumb(src, i, "absolute inset-0 h-full w-full")}
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

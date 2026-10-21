@@ -10,10 +10,37 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
-const OFFICES = [
-  { city: "London", lines: ["18 Belgrave Mews", "London SW1X 8RS"], tel: "+44 20 7946 0100" },
-  { city: "New York", lines: ["770 Park Avenue", "New York NY 10021"], tel: "+1 212 555 0100" },
-  { city: "Singapore", lines: ["6 Battery Road, #22", "Singapore 049909"], tel: "+65 6555 0100" },
+const DIRECT_LINKS = [
+  {
+    label: "Email",
+    value: "Vensaminvestmentlimited@gmail.com",
+    href: "mailto:Vensaminvestmentlimited@gmail.com",
+  },
+  {
+    label: "TikTok",
+    value: "@vensam_propertykenya",
+    href: "https://www.tiktok.com/@vensam_propertykenya",
+  },
+  {
+    label: "Instagram",
+    value: "Vensampoperty ke",
+    href: "https://www.instagram.com/vensampopertyke",
+  },
+  {
+    label: "Facebook",
+    value: "Vensamproperty ke",
+    href: "https://www.facebook.com/vensampropertyke",
+  },
+  {
+    label: "Google",
+    value: "vensam property kenya",
+    href: "https://www.google.com/search?q=vensam+property+kenya",
+  },
+  {
+    label: "Contact",
+    value: "Call/WhatsApp 0722473703",
+    href: "https://wa.me/254722473703",
+  },
 ];
 
 export default function ContactPage() {
@@ -35,22 +62,25 @@ export default function ContactPage() {
 
             <aside className="lg:col-span-5">
               <div className="card p-8">
-                <Eyebrow className="text-brass">Direct lines</Eyebrow>
+                <Eyebrow className="text-brass">Direct links</Eyebrow>
                 <ul className="mt-7">
-                  {OFFICES.map((o) => (
-                    <li key={o.city} className="border-b border-rule py-5 first:pt-0 last:border-0 last:pb-0">
-                      <h2 className="text-[1.1rem] font-semibold tracking-[-0.015em]">{o.city}</h2>
-                      <p className="mt-2 text-[0.9rem] leading-relaxed text-slate">
-                        {o.lines.join(", ")}
-                      </p>
-                      <a href={`tel:${o.tel.replace(/[\s+]/g, "")}`} className="link-chevron num mt-3 inline-flex text-[0.9rem]">
-                        {o.tel}
+                  {DIRECT_LINKS.map((l) => (
+                    <li key={l.label} className="border-b border-rule py-5 first:pt-0 last:border-0 last:pb-0">
+                      <h2 className="text-[1.1rem] font-semibold tracking-[-0.015em]">{l.label}</h2>
+                      <a
+                        href={l.href}
+                        target={l.href.startsWith("http") ? "_blank" : undefined}
+                        rel="noreferrer"
+                        className="link-chevron mt-2 inline-flex break-all text-[0.9rem]"
+                      >
+                        {l.value}
                       </a>
                     </li>
                   ))}
                 </ul>
               </div>
 
+              {/* "Other" section — commented out per request (kept for reference):
               <div className="mt-8 border-t border-rule pt-8">
                 <Eyebrow className="text-brass">Other</Eyebrow>
                 <dl className="mt-6 space-y-4 text-[0.9rem]">
@@ -80,6 +110,7 @@ export default function ContactPage() {
                   </div>
                 </dl>
               </div>
+              */}
             </aside>
           </div>
         </Container>

@@ -76,6 +76,11 @@ export const AREAS_SERVED: string[] = [
   "Ruaka",
 ];
 
+/** Headline cities for the header tagline — always a subset of AREAS_SERVED. */
+export const HEADLINE_AREAS: string[] = ["Nairobi", "Mombasa", "Kisumu", "Nakuru"].filter((c) =>
+  AREAS_SERVED.includes(c),
+);
+
 export const properties: Property[] = [
   {
     slug: "cliffside-estate-malibu",

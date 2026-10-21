@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/components/auth/auth-context";
 import { Chevron } from "@/components/ui";
+import { HEADLINE_AREAS } from "@/lib/data";
 
 const PROPERTIES = [
   {
@@ -211,7 +212,7 @@ export default function Header() {
               Private Enquiry
             </Link>
             <p className="mt-6 text-center text-caption text-fog">
-              London · New York · Los Angeles · Singapore
+              {HEADLINE_AREAS.join(" · ")}
             </p>
           </div>
         </div>

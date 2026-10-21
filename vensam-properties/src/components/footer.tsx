@@ -98,8 +98,7 @@ export default async function Footer() {
           </ul>
         </div>
 
-
-        <div className="grid gap-8 border-b border-rule py-12 sm:grid-cols-3">
+        {/* <div className="grid gap-8 border-b border-rule py-12 sm:grid-cols-3">
           {OFFICES.map((o) => (
             <div key={o.city}>
               <h3 className="text-[0.82rem] font-semibold">{o.city}</h3>
@@ -112,8 +111,7 @@ export default async function Footer() {
               </p>
             </div>
           ))}
-        </div>
-
+        </div> */}
 
         <div className="flex flex-col gap-4 pt-8 text-[0.75rem] leading-relaxed text-fog sm:flex-row sm:items-center sm:justify-between">
           <p>Copyright © {new Date().getFullYear()} Vensam Properties. All rights reserved.</p>

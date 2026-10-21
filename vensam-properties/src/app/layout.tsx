@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import RevealObserver from "@/components/reveal-observer";
-import CookieConsent from "@/components/cookie-consent";
+// import CookieConsent from "@/components/cookie-consent"; — cookies popup commented out
 import SiteChrome from "@/components/site-chrome";
 import AuthProvider from "@/components/auth/auth-context";
 import AuthModal from "@/components/auth/auth-modal";
@@ -121,7 +121,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <AuthProvider>
-          <SiteChrome header={<Header />} footer={<Footer />} consent={<CookieConsent />}>
+          <SiteChrome header={<Header />} footer={<Footer />} consent={null /* cookies popup commented out — was: <CookieConsent /> */}>
             {children}
           </SiteChrome>
           <AuthModal />

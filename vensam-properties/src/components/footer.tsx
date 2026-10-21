@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Container } from "./ui";
-import CookieSettingsButton from "./cookie-settings-button";
+// import CookieSettingsButton from "./cookie-settings-button"; — cookies commented out
 import { AREAS_SERVED } from "@/lib/data";
 import { getProperties } from "@/lib/server-api";
 
@@ -122,7 +122,7 @@ export default async function Footer() {
             <Link href="/terms" className="transition-colors hover:text-ink">
               Terms
             </Link>
-            <CookieSettingsButton className="transition-colors hover:text-ink" />
+            {/* <CookieSettingsButton className="transition-colors hover:text-ink" /> — commented out */}
             <Link href="/about" className="transition-colors hover:text-ink">
               Regulatory
             </Link>

@@ -154,68 +154,64 @@ export default async function PropertyPage({ params }: Params) {
       {/* ── Main content + contact rail ──────────────────────────── */}
       <section className="bg-paper py-14 sm:py-16 lg:py-20">
         <Container>
-          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-            <div className="lg:col-span-7">
-              {/* Summary */}
-              <p className="reveal eyebrow text-brass">
+          {/* ── Summary band (full width) ── */}
+          <div className="reveal flex flex-col gap-8 border-b border-rule pb-10 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-[42rem]">
+              <p className="eyebrow text-brass">
                 {p.type} ·{" "}
                 {p.sold ? <span className="text-red-600">Sold</span> : p.status}
               </p>
-              <h1 className="reveal display mt-4 text-display" style={{ ["--reveal-delay" as string]: "70ms" }}>
-                {p.title}
-              </h1>
-              <p className="reveal mt-3 text-[1.05rem] text-slate" style={{ ["--reveal-delay" as string]: "120ms" }}>
+              <h1 className="display mt-4 text-display">{p.title}</h1>
+              <p className="mt-3 text-[1.05rem] text-slate">
                 {p.location} · {p.region}
               </p>
-
-              <div className="mt-7 flex flex-wrap items-end justify-between gap-x-8 gap-y-4 border-b border-rule pb-7">
-                <div>
-                  <p className="text-[0.82rem] text-slate">{isRent ? "Rent" : "Guide price"}</p>
-                  <p className="num mt-1.5 text-[clamp(1.9rem,4vw,2.5rem)] font-semibold leading-none tracking-[-0.03em]">
-                    {formatPrice(p.price)}
-                    {isRent && <span className="text-[0.95rem] font-medium tracking-[-0.01em] text-slate"> / month</span>}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[0.82rem] text-slate">Reference</p>
-                  <p className="num mt-1.5 text-[0.95rem] font-medium">{refId}</p>
-                </div>
-              </div>
-
+            </div>
+            <div className="lg:shrink-0 lg:text-right">
+              <p className="text-[0.82rem] text-slate">{isRent ? "Rent" : "Guide price"}</p>
+              <p className="num mt-1.5 text-[clamp(2rem,4.5vw,2.75rem)] font-semibold leading-none tracking-[-0.03em]">
+                {formatPrice(p.price)}
+                {isRent && (
+                  <span className="text-[0.95rem] font-medium tracking-[-0.01em] text-slate"> / month</span>
+                )}
+              </p>
               <p
-                className={`mt-4 flex items-center gap-2 text-[0.9rem] font-medium ${
+                className={`mt-3 flex items-center gap-2 text-[0.9rem] font-medium lg:justify-end ${
                   p.sold ? "text-red-600" : "text-signal"
                 }`}
               >
                 <span aria-hidden className="size-1.5 rounded-full bg-current" />
                 {availability}
               </p>
+              <p className="mt-2 text-[0.78rem] text-slate">
+                Ref. <span className="num">{refId}</span>
+              </p>
+            </div>
+          </div>
 
-              {/* Key specifications */}
-              <div className="reveal mt-14 border-t border-rule pt-12" style={{ ["--reveal-delay" as string]: "170ms" }}>
+          {/* ── Highlights strip (full width) ── */}
+          <div className="reveal mt-10" style={{ ["--reveal-delay" as string]: "80ms" }}>
+            {specs.length > 0 ? (
+              <dl className="grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-3 lg:grid-cols-5">
+                {specs.map((s) => (
+                  <div key={s.k} className="border-b border-rule pb-4">
+                    <dt className="text-[0.78rem] text-slate">{s.k}</dt>
+                    <dd className="num mt-2 text-[1.4rem] font-semibold tracking-[-0.03em]">{s.v}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : (
+              <p className="rounded-card border border-dashed border-rule bg-mist px-5 py-6 text-[0.9rem] text-slate">
+                Specifications are shared with the full particulars — enquire below or call{" "}
+                <span className="num">{AGENCY_PHONE.display}</span>.
+              </p>
+            )}
+          </div>
+
+          <div className="mt-14 grid gap-12 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-7">
+              {/* About this residence */}
+              <div className="reveal" style={{ ["--reveal-delay" as string]: "140ms" }}>
                 <Eyebrow index="01" className="text-fog">
-                  Key specifications
-                </Eyebrow>
-                {specs.length > 0 ? (
-                  <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-card bg-rule sm:grid-cols-3">
-                    {specs.map((s) => (
-                      <div key={s.k} className="bg-mist px-5 py-6">
-                        <dt className="text-[0.78rem] text-slate">{s.k}</dt>
-                        <dd className="num mt-2.5 text-[1.3rem] font-semibold tracking-[-0.03em]">{s.v}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                ) : (
-                  <p className="mt-8 rounded-card border border-dashed border-rule bg-mist px-5 py-6 text-[0.9rem] text-slate">
-                    Specifications are shared with the full particulars — enquire below or call{" "}
-                    <span className="num">{AGENCY_PHONE.display}</span>.
-                  </p>
-                )}
-              </div>
-
-              {/* Description */}
-              <div className="reveal mt-14 border-t border-rule pt-12" style={{ ["--reveal-delay" as string]: "220ms" }}>
-                <Eyebrow index="02" className="text-fog">
                   About this residence
                 </Eyebrow>
                 <div className="mt-8">
@@ -233,8 +229,8 @@ export default async function PropertyPage({ params }: Params) {
               </div>
 
               {/* Features & amenities */}
-              <div className="reveal mt-14 border-t border-rule pt-12" style={{ ["--reveal-delay" as string]: "260ms" }}>
-                <Eyebrow index="03" className="text-fog">
+              <div className="reveal mt-14 border-t border-rule pt-12" style={{ ["--reveal-delay" as string]: "180ms" }}>
+                <Eyebrow index="02" className="text-fog">
                   Features &amp; amenities
                 </Eyebrow>
                 {p.features.length > 0 ? (
@@ -258,7 +254,7 @@ export default async function PropertyPage({ params }: Params) {
 
               {/* Property details */}
               <div className="reveal mt-14 border-t border-rule pt-12">
-                <Eyebrow index="04" className="text-fog">
+                <Eyebrow index="03" className="text-fog">
                   Property details
                 </Eyebrow>
                 <dl className="mt-8 grid sm:grid-cols-2 sm:gap-x-12">
@@ -288,7 +284,7 @@ export default async function PropertyPage({ params }: Params) {
 
               {/* Location */}
               <div className="reveal mt-14 border-t border-rule pt-12">
-                <Eyebrow index="05" className="text-fog">
+                <Eyebrow index="04" className="text-fog">
                   Location
                 </Eyebrow>
                 <p className="mt-8 text-[1.05rem] text-ink">
@@ -303,7 +299,7 @@ export default async function PropertyPage({ params }: Params) {
 
               {/* Agent & agency */}
               <div className="reveal mt-14 border-t border-rule pt-12">
-                <Eyebrow index="06" className="text-fog">
+                <Eyebrow index="05" className="text-fog">
                   Agent &amp; contact
                 </Eyebrow>
                 {agent ? (
@@ -345,20 +341,13 @@ export default async function PropertyPage({ params }: Params) {
             <aside className="lg:col-span-5" aria-label="Contact and enquiry">
               <div className="space-y-6">
                 <div className="card lg:sticky lg:top-24 lg:p-7">
-                  <div className="flex items-end justify-between gap-4 border-b border-rule pb-5">
-                    <div>
-                      <p className={`eyebrow ${p.sold ? "text-red-600" : "text-brass"}`}>
-                        {p.sold ? "Sold" : p.status}
-                      </p>
-                      <p className="num mt-2 text-[1.6rem] font-semibold leading-none tracking-[-0.03em]">
-                        {formatPrice(p.price)}
-                        {isRent && <span className="text-[0.85rem] font-medium text-slate"> /mo</span>}
-                      </p>
-                    </div>
-                    <p className="num pb-1 text-right text-[0.78rem] text-slate">
-                      Ref
-                      <br />
-                      {refId}
+                  <div className="border-b border-rule pb-5">
+                    <p className={`eyebrow ${p.sold ? "text-red-600" : "text-brass"}`}>
+                      {p.sold ? "Sold" : p.status}
+                    </p>
+                    <p className="num mt-2 text-[1.6rem] font-semibold leading-none tracking-[-0.03em]">
+                      {formatPrice(p.price)}
+                      {isRent && <span className="text-[0.85rem] font-medium text-slate"> /mo</span>}
                     </p>
                   </div>
 

@@ -12,3 +12,4 @@ dev.log
 start.log
 .env*
 .vercel
+.image-backup.json

@@ -8,6 +8,7 @@ import FavoriteButton from "@/components/favorite-button";
 import PropertyGallery from "@/components/property-gallery";
 import PropertyActions from "@/components/property-actions";
 import PropertyEnquiry from "@/components/property-enquiry";
+import ExpandableText from "@/components/expandable-text";
 import { AGENCY_PHONE } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 import { getAgents, getProperties } from "@/lib/server-api";
@@ -191,19 +192,21 @@ export default async function PropertyPage({ params }: Params) {
               </p>
 
               {/* Key specifications */}
-              <div className="reveal mt-12" style={{ ["--reveal-delay" as string]: "170ms" }}>
-                <Eyebrow>Key specifications</Eyebrow>
+              <div className="reveal mt-14 border-t border-rule pt-12" style={{ ["--reveal-delay" as string]: "170ms" }}>
+                <Eyebrow index="01" className="text-fog">
+                  Key specifications
+                </Eyebrow>
                 {specs.length > 0 ? (
-                  <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-card bg-rule sm:grid-cols-3">
+                  <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-card bg-rule sm:grid-cols-3">
                     {specs.map((s) => (
-                      <div key={s.k} className="bg-mist px-5 py-5">
-                        <dt className="text-[0.8rem] text-slate">{s.k}</dt>
-                        <dd className="num mt-2.5 text-[1.15rem] font-semibold tracking-[-0.02em]">{s.v}</dd>
+                      <div key={s.k} className="bg-mist px-5 py-6">
+                        <dt className="text-[0.78rem] text-slate">{s.k}</dt>
+                        <dd className="num mt-2.5 text-[1.3rem] font-semibold tracking-[-0.03em]">{s.v}</dd>
                       </div>
                     ))}
                   </dl>
                 ) : (
-                  <p className="mt-6 rounded-card border border-dashed border-rule bg-mist px-5 py-6 text-[0.9rem] text-slate">
+                  <p className="mt-8 rounded-card border border-dashed border-rule bg-mist px-5 py-6 text-[0.9rem] text-slate">
                     Specifications are shared with the full particulars — enquire below or call{" "}
                     <span className="num">{AGENCY_PHONE.display}</span>.
                   </p>
@@ -211,28 +214,42 @@ export default async function PropertyPage({ params }: Params) {
               </div>
 
               {/* Description */}
-              <div className="reveal mt-12 space-y-5" style={{ ["--reveal-delay" as string]: "220ms" }}>
-                <p className="text-[1.15rem] leading-relaxed tracking-[-0.012em] text-ink">{p.blurb}</p>
-                {p.description.map((para) => (
-                  <p key={para.slice(0, 24)} className="text-[1rem] leading-relaxed text-slate">
-                    {para}
-                  </p>
-                ))}
+              <div className="reveal mt-14 border-t border-rule pt-12" style={{ ["--reveal-delay" as string]: "220ms" }}>
+                <Eyebrow index="02" className="text-fog">
+                  About this residence
+                </Eyebrow>
+                <div className="mt-8">
+                  <ExpandableText>
+                    <div className="space-y-5">
+                      <p className="text-[1.15rem] leading-relaxed tracking-[-0.012em] text-ink">{p.blurb}</p>
+                      {p.description.map((para) => (
+                        <p key={para.slice(0, 24)} className="text-[1rem] leading-relaxed text-slate">
+                          {para}
+                        </p>
+                      ))}
+                    </div>
+                  </ExpandableText>
+                </div>
               </div>
 
               {/* Features & amenities */}
-              <div className="reveal mt-14" style={{ ["--reveal-delay" as string]: "260ms" }}>
-                <Eyebrow className="text-brass">Features &amp; amenities</Eyebrow>
+              <div className="reveal mt-14 border-t border-rule pt-12" style={{ ["--reveal-delay" as string]: "260ms" }}>
+                <Eyebrow index="03" className="text-fog">
+                  Features &amp; amenities
+                </Eyebrow>
                 {p.features.length > 0 ? (
-                  <ul className="mt-6 grid gap-px overflow-hidden rounded-card bg-rule sm:grid-cols-2">
+                  <ul className="mt-8 flex flex-wrap gap-2">
                     {p.features.map((f) => (
-                      <li key={f} className="bg-mist px-5 py-4 text-[0.9rem] text-slate">
+                      <li
+                        key={f}
+                        className="rounded-pill border border-rule px-4 py-2 text-[0.82rem] leading-none text-slate"
+                      >
                         {f}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="mt-6 rounded-card border border-dashed border-rule bg-mist px-5 py-6 text-[0.9rem] leading-relaxed text-slate">
+                  <p className="mt-8 rounded-card border border-dashed border-rule bg-mist px-5 py-6 text-[0.9rem] leading-relaxed text-slate">
                     Features and amenities are listed per listing — ask us for the full
                     specification of this property.
                   </p>
@@ -240,22 +257,29 @@ export default async function PropertyPage({ params }: Params) {
               </div>
 
               {/* Property details */}
-              <div className="reveal mt-14">
-                <Eyebrow className="text-brass">Property details</Eyebrow>
-                <dl className="mt-6 grid gap-px overflow-hidden rounded-card bg-rule sm:grid-cols-2">
+              <div className="reveal mt-14 border-t border-rule pt-12">
+                <Eyebrow index="04" className="text-fog">
+                  Property details
+                </Eyebrow>
+                <dl className="mt-8 grid sm:grid-cols-2 sm:gap-x-12">
                   {details
                     .filter(([, v]) => Boolean(v))
                     .map(([k, v]) => (
-                    <div key={k} className="flex items-center justify-between gap-4 bg-mist px-5 py-4 text-[0.88rem]">
-                      <dt className="text-slate">{k}</dt>
-                      <dd className={`num text-right text-ink ${k === "Availability" && p.sold ? "text-red-600" : ""}`}>
-                        {v}
-                      </dd>
-                    </div>
-                  ))}
+                      <div
+                        key={k}
+                        className="flex items-baseline justify-between gap-6 border-b border-rule py-4 text-[0.9rem]"
+                      >
+                        <dt className="text-slate">{k}</dt>
+                        <dd
+                          className={`num text-right font-medium text-ink ${k === "Availability" && p.sold ? "text-red-600" : ""}`}
+                        >
+                          {v}
+                        </dd>
+                      </div>
+                    ))}
                 </dl>
                 {missingParticulars && (
-                  <p className="mt-4 text-[0.82rem] leading-relaxed text-fog">
+                  <p className="mt-5 text-[0.82rem] leading-relaxed text-fog">
                     Furnishing, floor, condition and tenure are shown where provided — the full
                     particulars are shared on request.
                   </p>
@@ -263,23 +287,27 @@ export default async function PropertyPage({ params }: Params) {
               </div>
 
               {/* Location */}
-              <div className="reveal mt-14">
-                <Eyebrow className="text-brass">Location</Eyebrow>
-                <p className="mt-5 text-[1.05rem] text-ink">
+              <div className="reveal mt-14 border-t border-rule pt-12">
+                <Eyebrow index="05" className="text-fog">
+                  Location
+                </Eyebrow>
+                <p className="mt-8 text-[1.05rem] text-ink">
                   {p.location}
                   {p.region && ` · ${p.region}`}
                 </p>
-                <p className="mt-4 rounded-card border border-dashed border-rule bg-mist px-5 py-5 text-[0.9rem] leading-relaxed text-slate">
+                <p className="mt-4 text-[0.9rem] leading-relaxed text-slate">
                   A map with the exact pin — and any nearby landmarks we can verify — is provided
                   when your viewing is arranged. Nothing on this page is estimated.
                 </p>
               </div>
 
               {/* Agent & agency */}
-              <div className="reveal mt-14">
-                <Eyebrow className="text-brass">Agent &amp; contact</Eyebrow>
+              <div className="reveal mt-14 border-t border-rule pt-12">
+                <Eyebrow index="06" className="text-fog">
+                  Agent &amp; contact
+                </Eyebrow>
                 {agent ? (
-                  <div className="mt-6 flex items-center gap-4">
+                  <div className="mt-8 flex items-center gap-4">
                     <div className="frame relative size-14 shrink-0 rounded-full">
                       <Img src={agent.image} alt={agent.name} fill sizes="56px" className="object-cover" />
                     </div>
@@ -297,11 +325,11 @@ export default async function PropertyPage({ params }: Params) {
                     </div>
                   </div>
                 ) : (
-                  <p className="mt-5 text-[0.92rem] leading-relaxed text-slate">
+                  <p className="mt-8 text-[0.92rem] leading-relaxed text-slate">
                     Enquiries are handled by the Vensam Properties desk.
                   </p>
                 )}
-                <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-card border border-rule bg-mist px-5 py-4 text-[0.9rem]">
+                <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[0.9rem]">
                   <span className="font-medium text-ink">Vensam Properties</span>
                   <a href={`tel:${AGENCY_PHONE.tel}`} className="num text-signal transition-opacity hover:opacity-70">
                     {AGENCY_PHONE.display}

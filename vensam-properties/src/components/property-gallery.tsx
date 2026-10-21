@@ -95,7 +95,7 @@ export default function PropertyGallery({
 
   return (
     <>
-      <div className="grid gap-3 sm:grid-cols-12">
+      <div className="grid gap-3 overflow-auto sm:grid-cols-12">
         <button
           ref={mainRef}
           type="button"

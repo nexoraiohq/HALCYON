@@ -4,11 +4,11 @@ import { useState } from "react";
 import { ApiError, OfflineError, api, apiConfigured } from "@/lib/api";
 import type { EnquiryInput } from "@/lib/api-types";
 
-const INTEREST = ["Acquiring", "Selling", "Portfolio advice", "Restoration"];
+const INTEREST = ["Buying", "Renting", "Listing"];
 
 export default function ContactForm() {
   const [sent, setSent] = useState(false);
-  const [interest, setInterest] = useState("Acquiring");
+  const [interest, setInterest] = useState("Buying");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
 

@@ -2,18 +2,9 @@ import Link from "next/link";
 import { Container } from "./ui";
 import CookieSettingsButton from "./cookie-settings-button";
 import { AREAS_SERVED } from "@/lib/data";
+import { getProperties } from "@/lib/server-api";
 
 const COLS = [
-  {
-    title: "Residences",
-    links: [
-      { href: "/properties", label: "All residences" },
-      { href: "/properties?status=For+Rent", label: "For rent" },
-      { href: "/properties?region=Europe", label: "Europe" },
-      { href: "/properties?region=Mediterranean", label: "Mediterranean" },
-      { href: "/properties?region=Americas", label: "Americas" },
-    ],
-  },
   {
     title: "Advisory",
     links: [
@@ -40,12 +31,41 @@ const OFFICES = [
   { city: "Singapore", lines: ["6 Battery Road, #22", "Singapore 049909"], tel: "+65 6555 0100" },
 ];
 
-export default function Footer() {
+export default async function Footer() {
+  // Top three regions by property count — recomputed whenever pages render
+  // and refreshed automatically after any admin catalogue change (the admin
+  // console pings /api/revalidate, which revalidates the whole tree).
+  const properties = await getProperties();
+  const counts = new Map<string, number>();
+  for (const p of properties) {
+    const region = (p.region ?? "").trim();
+    if (region) counts.set(region, (counts.get(region) ?? 0) + 1);
+  }
+  const topRegions = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 3)
+    .map(([region]) => region);
+
+  const columns = [
+    {
+      title: "Residences",
+      links: [
+        { href: "/properties", label: "All residences" },
+        { href: "/properties?status=For+Rent", label: "For rent" },
+        ...topRegions.map((region) => ({
+          href: `/properties?region=${encodeURIComponent(region)}`,
+          label: region,
+        })),
+      ],
+    },
+    ...COLS,
+  ];
+
   return (
     <footer className="bg-mist text-ink">
       <Container className="pb-28 pt-14 sm:py-16">
         <div className="grid gap-10 border-b border-rule pb-12 sm:grid-cols-3">
-          {COLS.map((col) => (
+          {columns.map((col) => (
             <nav key={col.title} aria-label={col.title}>
               <h3 className="text-[0.82rem] font-semibold tracking-[-0.01em]">{col.title}</h3>
               <ul className="mt-4 space-y-2.5">

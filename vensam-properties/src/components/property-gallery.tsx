@@ -95,13 +95,13 @@ export default function PropertyGallery({
 
   return (
     <>
-      <div className="grid gap-3 sm:grid-cols-12">
+      <div className="flex flex-col gap-3 sm:flex-row">
         <button
           ref={mainRef}
           type="button"
           onClick={() => setOpen(true)}
           aria-label={`View full screen — ${altFor(safeIdx)}`}
-          className="relative aspect-[3/2] w-full cursor-zoom-in overflow-hidden rounded-card sm:col-span-8"
+          className="relative aspect-[3/2] w-full cursor-zoom-in overflow-hidden rounded-card sm:w-2/3"
         >
           <Img
             src={images[safeIdx]}
@@ -123,7 +123,7 @@ export default function PropertyGallery({
         </button>
 
         {total > 1 && (
-          <div className="no-bar flex gap-3 overflow-x-auto sm:col-span-4 sm:min-h-0 sm:flex-col sm:overflow-x-hidden sm:overflow-y-auto">
+          <div className="no-bar flex w-full gap-3 overflow-x-auto sm:w-1/3 sm:min-h-0 sm:flex-col sm:overflow-x-hidden sm:overflow-y-auto">
             {images.map((src, i) => (
               <div key={i} className="relative aspect-[3/2] w-28 shrink-0 sm:w-full">
                 {thumb(src, i, "absolute inset-0 h-full w-full")}

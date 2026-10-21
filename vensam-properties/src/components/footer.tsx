@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Container } from "./ui";
 import CookieSettingsButton from "./cookie-settings-button";
+import { AREAS_SERVED } from "@/lib/data";
 
 const COLS = [
   {
@@ -61,6 +62,20 @@ export default function Footer() {
               </ul>
             </nav>
           ))}
+        </div>
+
+        <div className="border-b border-rule py-10">
+          <h3 className="text-[0.82rem] font-semibold tracking-[-0.01em]">Areas we serve</h3>
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {AREAS_SERVED.map((area) => (
+              <li
+                key={area}
+                className="rounded-pill border border-rule px-3 py-1.5 text-[0.75rem] leading-none text-slate"
+              >
+                {area}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="grid gap-8 border-b border-rule py-12 sm:grid-cols-3">

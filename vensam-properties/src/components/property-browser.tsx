@@ -126,7 +126,7 @@ export default function PropertyBrowser({
             <div
               role="group"
               aria-label="Filter by availability"
-              className="inline-flex w-fit shrink-0 rounded-pill border border-rule bg-white p-1"
+              className="flex w-full shrink-0 rounded-pill border border-rule bg-white p-1 md:inline-flex md:w-fit"
             >
               {availability.map((o) => {
                 const on = status === o.value;
@@ -136,7 +136,7 @@ export default function PropertyBrowser({
                     type="button"
                     aria-pressed={on}
                     onClick={() => setParam("status", o.value)}
-                    className={`rounded-pill px-3.5 py-1.5 text-[0.78rem] font-medium tracking-[-0.004em] transition-colors duration-300 ${
+                    className={`flex-1 rounded-pill px-3.5 py-2 text-center text-[0.78rem] font-medium tracking-[-0.004em] transition-colors duration-300 md:flex-none ${
                       on ? "bg-ink text-white" : "text-slate hover:text-ink"
                     }`}
                   >
@@ -146,55 +146,60 @@ export default function PropertyBrowser({
               })}
             </div>
 
-            <div
-              role="group"
-              aria-label="Filter by region"
-              className="no-bar flex min-w-0 flex-1 items-center gap-2 overflow-x-auto"
-            >
-              {regions.map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  aria-pressed={region === r}
-                  onClick={() => setParam("region", r === "All regions" ? null : r)}
-                  className={`${chipBase} ${
-                    region === r
-                      ? "border-ink bg-ink text-white"
-                      : "border-rule text-slate hover:border-ink hover:text-ink"
-                  }`}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
+            {/* Small screens: region chips and sort share one full-width row
+                (chips scroll, sort pinned right). From md up the wrapper
+                dissolves (display:contents) into the single filter row. */}
+            <div className="flex items-center gap-3 md:contents">
+              <div
+                role="group"
+                aria-label="Filter by region"
+                className="no-bar flex min-w-0 flex-1 items-center gap-2 overflow-x-auto"
+              >
+                {regions.map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    aria-pressed={region === r}
+                    onClick={() => setParam("region", r === "All regions" ? null : r)}
+                    className={`${chipBase} ${
+                      region === r
+                        ? "border-ink bg-ink text-white"
+                        : "border-rule text-slate hover:border-ink hover:text-ink"
+                    }`}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
 
-            <label className="flex shrink-0 items-center gap-2.5 self-start md:self-auto">
-              <span className="text-[0.78rem] tracking-[-0.004em] text-slate">Sort</span>
-              <span className="relative">
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value as Sort)}
-                  aria-label="Sort residences"
-                  className="cursor-pointer appearance-none rounded-pill border border-rule bg-white py-2 pl-3.5 pr-8 text-[0.78rem] font-medium tracking-[-0.004em] text-ink transition-colors duration-300 hover:border-ink focus:border-ink focus:outline-none"
-                >
-                  {SORTS.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-                <svg
-                  aria-hidden
-                  viewBox="0 0 24 24"
-                  className="pointer-events-none absolute right-2.5 top-1/2 size-4 -translate-y-1/2 text-slate"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </span>
-            </label>
+              <label className="flex shrink-0 items-center gap-2.5">
+                <span className="text-[0.78rem] tracking-[-0.004em] text-slate">Sort</span>
+                <span className="relative">
+                  <select
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value as Sort)}
+                    aria-label="Sort residences"
+                    className="cursor-pointer appearance-none rounded-pill border border-rule bg-white py-2 pl-3.5 pr-8 text-[0.78rem] font-medium tracking-[-0.004em] text-ink transition-colors duration-300 hover:border-ink focus:border-ink focus:outline-none"
+                  >
+                    {SORTS.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                  <svg
+                    aria-hidden
+                    viewBox="0 0 24 24"
+                    className="pointer-events-none absolute right-2.5 top-1/2 size-4 -translate-y-1/2 text-slate"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </label>
+            </div>
           </div>
         </Container>
       </div>
